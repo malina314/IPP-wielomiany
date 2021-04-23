@@ -233,7 +233,6 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
 
     size_t k = 0;
 
-//    res.arr[k++] = MonoClone(&monosArr[0]);
     res.arr[k++] = monosArr[0];
 
     for (size_t i = 1; i < count; ++i) {
@@ -244,7 +243,6 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
             res.arr[k - 1].p = sum;
         }
         else {
-//            res.arr[k++] = MonoClone(&monosArr[i++]);
             res.arr[k++] = monosArr[i];
         }
     }
@@ -255,6 +253,180 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
 
     PolyNormalize(&res);
 
+    return res;
+}
+
+/**
+ * Mnoży wielomian przez współczynnik.
+ * @param[in] p : wielomian @f$p@f$
+ * @param[in] c : współczynnik @f$c@f$
+ * @return @f$c * p@f$
+ */
+static void PolyMulByCoeff(Poly *p, poly_coeff_t c);
+
+/**
+ * Mnoży jednomian przez współczynnik.
+ * @param[in] m : jednomian @f$m@f$
+ * @param[in] c : współczynnik @f$c@f$
+ * @return @f$c * m@f$
+ */
+static inline void MonoMulByCoeff(Mono *m, poly_coeff_t c) {
+    PolyMulByCoeff(&m->p, c);
+}
+
+static void PolyMulByCoeff(Poly *p, poly_coeff_t c) {
+    if (c == 0) {
+        PolyDestroy(p);
+        *p = PolyZero();
+    }
+    else if (PolyIsCoeff(p)) {
+        p->coeff *= c;
+    }
+    else {
+        for (size_t i = 0; i < p->size; ++i) {
+            MonoMulByCoeff(&p->arr[i], c);
+        }
+    }
+}
+
+/**
+ * Mnoży dwa jednomiany.
+ * @param[in] m : jednomian @f$m@f$
+ * @param[in] n : jednomian @f$n@f$
+ * @return @f$m * n@f$
+ */
+static inline Mono MonoMul(const Mono *m, const Mono *n) {
+    return (Mono) {.p = PolyMul(&m->p, &n->p), .exp = m->exp + n->exp};
+}
+
+Poly PolyMul(const Poly *p, const Poly *q) {
+    if (PolyIsCoeff(p)) {
+        Poly res = PolyClone(q);
+        PolyMulByCoeff(&res, p->coeff);
+        return res;
+    }
+    if (PolyIsCoeff(q)) {
+        Poly res = PolyClone(p);
+        PolyMulByCoeff(&res, q->coeff);
+        return res;
+    }
+
+    Mono *monos = malloc(p->size * q->size * sizeof (Mono));
+    CHECK_PTR(monos);
+    size_t k = 0;
+
+    for (size_t i = 0; i < p->size; ++i) {
+        for (size_t j = 0; j < q->size; ++j) {
+            monos[k++] = MonoMul(&p->arr[i], &q->arr[j]);
+        }
+    }
+
+    Poly res = PolyAddMonos(k, monos);
+    free(monos);
+    return res;
+}
+
+Poly PolyNeg(const Poly *p) {
+    Poly res = PolyClone(p);
+    PolyMulByCoeff(&res, -1);
+    return res;
+}
+
+Poly PolySub(const Poly *p, const Poly *q) {
+    Poly r = PolyNeg(q);
+    Poly res = PolyAdd(p, &r);
+    PolyDestroy(&r);
+    return res;
+}
+
+/**
+ * Zwraca maksiumum z wartości @f$a, b@f$
+ * @param[in] a : liczba @f$a@f$
+ * @param[in] b : liczba @f$b@f$
+ * @return @f$max(a, b)@f$
+ */
+static inline size_t max(size_t a, size_t b) {
+    return a > b ? a : b;
+}
+
+poly_exp_t PolyDegBy(const Poly *p, size_t var_idx) {
+    if (PolyIsZero(p)) {
+        return -1;
+    }
+    if (PolyIsCoeff(p)) {
+        return 0;
+    }
+
+    if (var_idx == 0) {
+        return p->arr[p->size - 1].exp;
+    }
+
+    size_t deg = 0;
+
+    for (size_t i = 0; i < p->size; ++i) {
+        deg = max(deg, PolyDegBy(&p->arr[i].p, var_idx - 1));
+    }
+
+    return deg;
+}
+
+poly_exp_t PolyDeg(const Poly *p) {
+    if (PolyIsZero(p)) {
+        return -1;
+    }
+    if (PolyIsCoeff(p)) {
+        return 0;
+    }
+
+    size_t deg = 0;
+
+    for (size_t i = 0; i < p->size; ++i) {
+        deg = max(deg, PolyDeg(&p->arr[i].p) + p->arr[i].exp);
+    }
+
+    return deg;
+}
+
+/**
+ * Oblicza @p n-tą potęgę liczby @p x
+ * @param x : podstawa
+ * @param n : wykładnik
+ * @return @f$x^n@f$
+ */
+poly_coeff_t fastPow(poly_coeff_t x, poly_exp_t n) {
+    poly_coeff_t res = 1;
+    while (n) {
+        if (n % 2 == 0) {
+            x *= x;
+        }
+        else {
+            res *= x;
+        }
+        n /= 2;
+    }
+    return res;
+}
+
+Poly PolyAt(const Poly *p, poly_coeff_t x) {
+    if (x == 0) {
+        return PolyZero();
+    }
+    if (PolyIsCoeff(p)) {
+        return PolyFromCoeff(p->coeff * x);
+    }
+
+    Mono *monos = malloc(p->size * sizeof (Mono));
+    CHECK_PTR(monos);
+    size_t k = 0;
+
+    for (size_t i = 0; i < p->size; ++i) {
+         monos[k] = MonoClone(&p->arr[i]);
+         MonoMulByCoeff(&monos[k], fastPow(x, monos[k].exp));
+         k++;
+    }
+
+    Poly res = PolyAddMonos(k, monos);
+    free(monos);
     return res;
 }
 
