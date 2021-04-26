@@ -10,6 +10,8 @@ Uwaga: aktualna treść zadania znajduje się w [Moodle](https://moodle.mimuw.ed
 Tegoroczne duże zadanie polega na zaimplementowaniu operacji na wielomianach
 rzadkich wielu zmiennych.
 
-TODO
+### Opis rozwiązania
+Implementacja zakłada, że jednomiany składowe wielomianu są posortowane rosnąco
+po wykładniku. Wielomian nie zawiera jednomianów o zerowych współczynnikach.
 
 */
