@@ -62,6 +62,7 @@ Poly PolyClone(const Poly *p) {
  * @param[in] p : wielomian
  * @return Czy wielomian jest posortowany?
  */
+#ifndef NDEBUG
 static bool PolyIsSorted(const Poly *p) {
     if (!PolyIsCoeff(p)) {
         for (size_t i = 1; i < p->size; ++i) {
@@ -72,6 +73,7 @@ static bool PolyIsSorted(const Poly *p) {
     }
     return true;
 }
+#endif
 
 /**
  * Tworzy wielomian składający się tylko z jednego jednomianu.
