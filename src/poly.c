@@ -7,17 +7,9 @@
   @date 2021
 */
 
-
 #include "poly.h"
 #include <stdbool.h>
 #include <stdlib.h>
-
-
-//#define WYPISYWANIE
-
-#ifdef WYPISYWANIE
-#include "print.h"
-#endif
 
 /**
  * Sprawdza, czy udało się zaalokować pamięć. Jeśli nie, kończy działanie
@@ -65,6 +57,8 @@ Poly PolyClone(const Poly *p) {
 
 /**
  * Sprawdza, czy jednomiany wielomianu są posortowane rosnąco po wykładniku.
+ * Funkcja służy wyłącznie do sprawdzania asercji w kilku funkcjach, których
+ * działanie opiera się na założeniu, że wielomiany są posortowane.
  * @param[in] p : wielomian
  * @return Czy wielomian jest posortowany?
  */
@@ -81,7 +75,6 @@ static bool PolyIsSorted(const Poly *p) {
 
 /**
  * Tworzy wielomian składający się tylko z jednego jednomianu.
- * Przejmuje jednomian na własność.
  * @param[in] m : jednomian
  * @return wielomian
  */
@@ -190,10 +183,6 @@ Poly PolyAdd(const Poly *p, const Poly *q) {
         PolyShrinkArray(&res, k);
     }
 
-#ifdef WYPISYWANIE
-    PolyPrint(&res, 0);
-#endif
-
     PolyNormalize(&res);
 
     PolyDestroy(&tmp);
@@ -258,19 +247,21 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
 
 /**
  * Mnoży wielomian przez współczynnik.
+ * Mnnożony wielomian jest modyfikowany.
  * @param[in] p : wielomian @f$p@f$
  * @param[in] c : współczynnik @f$c@f$
- * @return @f$c * p@f$
  */
 static void PolyMulByCoeff(Poly *p, poly_coeff_t c);
 
 /**
  * Mnoży jednomian przez współczynnik.
+ * Mnnożony jednomian jest modyfikowany. Jest to funkcja pomocnicza dla
+ * PolyMulByCoeff() i nie jest wywoływana w żadnym innym miejscu.
  * @param[in] m : jednomian @f$m@f$
  * @param[in] c : współczynnik @f$c@f$
- * @return @f$c * m@f$
  */
 static inline void MonoMulByCoeff(Mono *m, poly_coeff_t c) {
+    assert(c != 0);
     PolyMulByCoeff(&m->p, c);
 }
 
@@ -323,6 +314,7 @@ Poly PolyMul(const Poly *p, const Poly *q) {
 
     Poly res = PolyAddMonos(k, monos);
     free(monos);
+
     return res;
 }
 
@@ -396,13 +388,11 @@ poly_exp_t PolyDeg(const Poly *p) {
 poly_coeff_t fastPow(poly_coeff_t x, poly_exp_t n) {
     poly_coeff_t res = 1;
     while (n) {
-        if (n % 2 == 0) {
-            x *= x;
-        }
-        else {
+        if (n % 2 == 1) {
             res *= x;
         }
         n /= 2;
+        x *= x;
     }
     return res;
 }
@@ -415,18 +405,17 @@ Poly PolyAt(const Poly *p, poly_coeff_t x) {
         return PolyFromCoeff(p->coeff * x);
     }
 
-    Mono *monos = malloc(p->size * sizeof (Mono));
-    CHECK_PTR(monos);
-    size_t k = 0;
+    Poly res = PolyZero();
 
     for (size_t i = 0; i < p->size; ++i) {
-         monos[k] = MonoClone(&p->arr[i]);
-         MonoMulByCoeff(&monos[k], fastPow(x, monos[k].exp));
-         k++;
+        Poly tmp = PolyClone(&p->arr[i].p);
+        PolyMulByCoeff(&tmp, fastPow(x, p->arr[i].exp));
+        Poly sum = PolyAdd(&res, &tmp);
+        PolyDestroy(&tmp);
+        PolyDestroy(&res);
+        res = sum;
     }
 
-    Poly res = PolyAddMonos(k, monos);
-    free(monos);
     return res;
 }
 
@@ -440,13 +429,8 @@ static inline bool MonoIsEq(const Mono *m, const Mono *n) {
     return m->exp == n->exp && PolyIsEq(&m->p, &n->p);
 }
 
-//TODO:
-// sprawdzić czy na pewno wielomiany będą znormalizowane
 bool PolyIsEq(const Poly *p, const Poly *q) {
     assert(PolyIsSorted(p) && PolyIsSorted(q));
-
-//    PolyNormalize((Poly *)p);
-//    PolyNormalize((Poly *)q);
 
     if (PolyIsCoeff(p) && PolyIsCoeff(q)) {
         return p->coeff == q->coeff;
@@ -464,5 +448,6 @@ bool PolyIsEq(const Poly *p, const Poly *q) {
 
         return true;
     }
+
     return false;
 }

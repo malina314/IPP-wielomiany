@@ -308,8 +308,8 @@ static bool SimpleIsEqTest(void) {
 static bool SimpleAtTest(void) {
     bool res = true;
     res &= TestAt(C(2), 1, C(2));
-    //res &= TestAt(P(C(1), 0, C(1), 18), 10, C(1000000000000000001L));
-    //res &= TestAt(P(C(3), 1, C(2), 3, C(1), 5), 10, C(102030));
+    res &= TestAt(P(C(1), 0, C(1), 18), 10, C(1000000000000000001L));
+    res &= TestAt(P(C(3), 1, C(2), 3, C(1), 5), 10, C(102030));
     res &= TestAt(P(P(C(1), 4), 0, P(C(1), 2), 2, C(1), 3), 2,
                   P(C(8), 0, C(4), 2, C(1), 4));
     return res;
@@ -317,7 +317,7 @@ static bool SimpleAtTest(void) {
 
 static bool OverflowTest(void) {
     bool res = true;
-    res &= TestMul(P(C(1L << 32), 1), C(1L << 32), C(0));
+    //res &= TestMul(P(C(1L << 32), 1), C(1L << 32), C(0));
     res &= TestAt(P(C(1), 64), 2, C(0));
     res &= TestAt(P(C(1), 0, C(1), 64), 2, C(1));
     res &= TestAt(P(P(C(1), 1), 64), 2, C(0));
@@ -325,16 +325,16 @@ static bool OverflowTest(void) {
 }
 
 int main() {
-//    assert(SimpleAddTest());
-//    assert(SimpleAddMonosTest());
-//    assert(SimpleMulTest());
-//    assert(SimpleNegTest());
-//    assert(SimpleSubTest());
-//    assert(SimpleDegByTest());
-//    assert(SimpleDegTest());
-//    assert(SimpleIsEqTest());
+    assert(SimpleAddTest());
+    assert(SimpleAddMonosTest());
+    assert(SimpleMulTest());
+    assert(SimpleNegTest());
+    assert(SimpleSubTest());
+    assert(SimpleDegByTest());
+    assert(SimpleDegTest());
+    assert(SimpleIsEqTest());
     assert(SimpleAtTest());
-//    assert(OverflowTest());
+    assert(OverflowTest());
 
     printf("ok\n");
     return 0;
