@@ -10,6 +10,7 @@
 #include "poly.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * Sprawdza, czy udało się zaalokować pamięć. Jeśli nie, kończy działanie
@@ -215,7 +216,9 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
         return PolyZero();
     }
 
-    Mono *monosArr = (Mono *)monos;
+    Mono *monosArr = malloc(count * sizeof (Mono));
+    CHECK_PTR(monosArr);
+    memcpy(monosArr, monos, count * sizeof (Mono));
 
     qsort(monosArr, count, sizeof (Mono), cmpMonos);
 
@@ -243,6 +246,8 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
     }
 
     PolyNormalize(&res);
+
+    free(monosArr);
 
     return res;
 }
@@ -402,11 +407,11 @@ poly_coeff_t fastPow(poly_coeff_t x, poly_exp_t n) {
 }
 
 Poly PolyAt(const Poly *p, poly_coeff_t x) {
+    if (PolyIsCoeff(p)) {
+        return PolyFromCoeff(p->coeff);
+    }
     if (x == 0) {
         return PolyZero();
-    }
-    if (PolyIsCoeff(p)) {
-        return PolyFromCoeff(p->coeff * x);
     }
 
     Poly res = PolyZero();
