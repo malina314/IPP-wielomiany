@@ -3,3 +3,7 @@ build/
 cmake-build-debug/
 debug/
 release/
+src/testy-duze-zadanie-1/
+CMakeLists.txt
+src/poly_example.c
+src/skrypt.sh
