@@ -296,11 +296,13 @@ Poly PolyMul(const Poly *p, const Poly *q) {
     if (PolyIsCoeff(p)) {
         Poly res = PolyClone(q);
         PolyMulByCoeff(&res, p->coeff);
+        PolyNormalize(&res);
         return res;
     }
     if (PolyIsCoeff(q)) {
         Poly res = PolyClone(p);
         PolyMulByCoeff(&res, q->coeff);
+        PolyNormalize(&res);
         return res;
     }
 
