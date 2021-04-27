@@ -317,7 +317,7 @@ static bool SimpleAtTest(void) {
 
 static bool OverflowTest(void) {
     bool res = true;
-    //res &= TestMul(P(C(1L << 32), 1), C(1L << 32), C(0));
+    res &= TestMul(P(C(1L << 32), 1), C(1L << 32), C(0));
     res &= TestAt(P(C(1), 64), 2, C(0));
     res &= TestAt(P(C(1), 0, C(1), 64), 2, C(1));
     res &= TestAt(P(P(C(1), 1), 64), 2, C(0));
