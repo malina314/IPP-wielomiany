@@ -410,9 +410,6 @@ Poly PolyAt(const Poly *p, poly_coeff_t x) {
     if (PolyIsCoeff(p)) {
         return PolyFromCoeff(p->coeff);
     }
-    if (x == 0) {
-        return PolyZero();
-    }
 
     Poly res = PolyZero();
 
