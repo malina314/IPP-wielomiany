@@ -7,20 +7,13 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <stdio.h>
 
-//#define WYPISYWANIE
-
-#ifdef WYPISYWANIE
-#include "print.h"
-#endif
-
-#define CHECK_PTR(p)  \
-  do {                \
-    if (p == NULL) {  \
-      exit(1);        \
-    }                 \
-  } while (0)
+#define CHECK_PTR(p)        \
+    do {                    \
+        if (p == NULL) {    \
+            exit(1);        \
+        }                   \
+    } while (0)
 
 #define C PolyFromCoeff
 
@@ -58,14 +51,6 @@ static bool TestOp(Poly a, Poly b, Poly res,
                    Poly (*op)(const Poly *, const Poly *)) {
     Poly c = op(&a, &b);
     bool is_eq = PolyIsEq(&c, &res);
-
-#ifdef WYPISYWANIE
-    PolyPrint(&a, 0);
-    PolyPrint(&b, 0);
-    PolyPrint(&c, 0);
-    PolyPrint(&res, 0);
-#endif
-
     PolyDestroy(&a);
     PolyDestroy(&b);
     PolyDestroy(&c);
@@ -123,7 +108,7 @@ static bool TestAt(Poly a, poly_coeff_t x, Poly res) {
 
 static bool SimpleAddTest(void) {
     bool res = true;
-    // Różne przypadki wielomian/współczynnik - ok
+    // Różne przypadki wielomian/współczynnik
     res &= TestAdd(C(1),
                    C(2),
                    C(3));
@@ -146,7 +131,7 @@ static bool SimpleAddTest(void) {
     res &= TestAdd(P(C(1), 1, C(2), 2),
                    P(C(-1), 1),
                    P(C(2), 2));
-    res &= TestAdd(P(C(2), 0, C(1), 1), // to się wywala
+    res &= TestAdd(P(C(2), 0, C(1), 1),
                    P(C(-1), 1),
                    C(2));
     // Dodawanie współczynnika i upraszczanie
@@ -335,7 +320,4 @@ int main() {
     assert(SimpleIsEqTest());
     assert(SimpleAtTest());
     assert(OverflowTest());
-
-    printf("ok\n");
-    return 0;
 }

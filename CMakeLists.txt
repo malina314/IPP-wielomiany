@@ -24,7 +24,7 @@ set(SOURCE_FILES
     src/poly.c
     src/poly.h
     src/poly_example.c
-    src/print.h)
+        )
 
 # Wskazujemy plik wykonywalny.
 add_executable(poly ${SOURCE_FILES})
