@@ -30,7 +30,9 @@
  * @return wielomian
  */
 static inline Poly PolyCreate(size_t size) {
-    return (Poly) {.size = (size), .arr = malloc((size) * sizeof (Mono))};
+    Mono *arr = malloc((size) * sizeof (Mono));
+    CHECK_PTR(arr);
+    return (Poly) {.size = (size), .arr = arr};
 }
 
 void PolyDestroy(Poly *p) {
@@ -48,7 +50,6 @@ Poly PolyClone(const Poly *p) {
     }
     else {
         Poly newPoly = PolyCreate(p->size);
-        CHECK_PTR(newPoly.arr);
         for (size_t i = 0; i < p->size; ++i) {
             newPoly.arr[i] = MonoClone(&p->arr[i]);
         }
@@ -83,7 +84,6 @@ static bool PolyIsSorted(const Poly *p) {
  */
 static Poly PolyFormMono(Mono m) {
     Poly p = PolyCreate(1);
-    CHECK_PTR(p.arr);
     p.arr[0] = m;
     return p;
 }
@@ -106,7 +106,7 @@ static void PolyShrinkArray(Poly *p, size_t size) {
  */
 static void PolyNormalize(Poly *p) {
     if (!PolyIsCoeff(p)) {
-        size_t k = 0;
+        size_t k = 0; // indeks tablicy newArr
         Mono *newArr = malloc(p->size * sizeof (Mono));
         CHECK_PTR(newArr);
 
@@ -127,10 +127,13 @@ static void PolyNormalize(Poly *p) {
         p->arr = newArr;
 
         if (k == 0) {
+            // tablica jednomianów jest pusta, czyli mamy wielomian zerowy
             *p = PolyZero();
             free(newArr);
         }
         else if (k == 1 && p->arr[0].exp == 0 && PolyIsCoeff(&p->arr[0].p)) {
+            // wielomian p ma tylko 1 jednomian stopnia 0, którego wielomian
+            // jest współczynnikiem, zatem wielomian p jest współczynnikiem
             *p = p->arr[0].p;
             free(newArr);
         }
@@ -159,17 +162,20 @@ Poly PolyAdd(const Poly *p, const Poly *q) {
 
     size_t i = 0, j = 0, k = 0;
     Poly res = PolyCreate(p->size + q->size);
-    CHECK_PTR(res.arr);
 
     while (i < p->size && j < q->size) {
         if (p->arr[i].exp == q->arr[j].exp) {
+            // wykładniki są równe, więc dodajemy
             res.arr[k].exp = p->arr[i].exp;
             res.arr[k++].p = PolyAdd(&p->arr[i++].p, &q->arr[j++].p);
         }
         else if (p->arr[i].exp < q->arr[j].exp) {
+            // wykładniki są różne, więc kopiujemy mniejszy jednomian,
+            // ponieważ już go nie dodamy, dlatego że tablice są posortowane
             res.arr[k++] = MonoClone(&p->arr[i++]);
         }
         else {
+            // j.w.
             res.arr[k++] = MonoClone(&q->arr[j++]);
         }
     }
@@ -201,8 +207,7 @@ Poly PolyAdd(const Poly *p, const Poly *q) {
  * @f$0@f$ jeśli są równe,
  * @f$-1@f$ jeśli @f$b@f$ jest większy niż @f$a@f$
  */
-static int cmpMonos(const void* a, const void* b)
-{
+static int MonoCompare(const void* a, const void* b) {
     const Mono *arg1 = (const Mono *)a;
     const Mono *arg2 = (const Mono *)b;
 
@@ -220,10 +225,9 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
     CHECK_PTR(monosArr);
     memcpy(monosArr, monos, count * sizeof (Mono));
 
-    qsort(monosArr, count, sizeof (Mono), cmpMonos);
+    qsort(monosArr, count, sizeof(Mono), MonoCompare);
 
     Poly res = PolyCreate(count);
-    CHECK_PTR(res.arr);
 
     size_t k = 0;
 
@@ -346,11 +350,11 @@ Poly PolySub(const Poly *p, const Poly *q) {
  * @param[in] b : liczba @f$b@f$
  * @return @f$max(a, b)@f$
  */
-static inline size_t max(size_t a, size_t b) {
+static inline poly_exp_t Max(poly_exp_t a, poly_exp_t b) {
     return a > b ? a : b;
 }
 
-poly_exp_t PolyDegBy(const Poly *p, size_t var_idx) {
+poly_exp_t PolyDegBy(const Poly *p, size_t varIdx) {
     if (PolyIsZero(p)) {
         return -1;
     }
@@ -358,14 +362,14 @@ poly_exp_t PolyDegBy(const Poly *p, size_t var_idx) {
         return 0;
     }
 
-    if (var_idx == 0) {
+    if (varIdx == 0) {
         return p->arr[p->size - 1].exp;
     }
 
-    size_t deg = 0;
+    poly_exp_t deg = 0;
 
     for (size_t i = 0; i < p->size; ++i) {
-        deg = max(deg, PolyDegBy(&p->arr[i].p, var_idx - 1));
+        deg = Max(deg, PolyDegBy(&p->arr[i].p, varIdx - 1));
     }
 
     return deg;
@@ -382,7 +386,7 @@ poly_exp_t PolyDeg(const Poly *p) {
     size_t deg = 0;
 
     for (size_t i = 0; i < p->size; ++i) {
-        deg = max(deg, PolyDeg(&p->arr[i].p) + p->arr[i].exp);
+        deg = Max(deg, PolyDeg(&p->arr[i].p) + p->arr[i].exp);
     }
 
     return deg;
@@ -394,7 +398,7 @@ poly_exp_t PolyDeg(const Poly *p) {
  * @param n : wykładnik
  * @return @f$x^n@f$
  */
-poly_coeff_t fastPow(poly_coeff_t x, poly_exp_t n) {
+poly_coeff_t FastPow(poly_coeff_t x, poly_exp_t n) {
     poly_coeff_t res = 1;
     while (n) {
         if (n % 2 == 1) {
@@ -415,7 +419,7 @@ Poly PolyAt(const Poly *p, poly_coeff_t x) {
 
     for (size_t i = 0; i < p->size; ++i) {
         Poly tmp = PolyClone(&p->arr[i].p);
-        PolyMulByCoeff(&tmp, fastPow(x, p->arr[i].exp));
+        PolyMulByCoeff(&tmp, FastPow(x, p->arr[i].exp));
         Poly sum = PolyAdd(&res, &tmp);
         PolyDestroy(&tmp);
         PolyDestroy(&res);
