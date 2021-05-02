@@ -11,7 +11,33 @@ Tegoroczne duże zadanie polega na zaimplementowaniu operacji na wielomianach
 rzadkich wielu zmiennych.
 
 ### Opis rozwiązania
+Polynomials jest biblioteką umożliwiającą operacje na wielomianach rzadkich
+wielu zmiennych o współczynnikach całkowitych. Biblioteka usdotępnia struktury
+reprezentujące jednomian oraz wielomian, a także funkcje wykonujące podstawowe
+operacje arytmetyczne na wielomianach, takie jak dodawanie, odejmowanie, mnożenie,
+porównywanie, obliczenie stopnia oraz wartości w punkcie.
+Biblioteka napisana jest w języku C, w standardzie C11.
 Implementacja zakłada, że jednomiany składowe wielomianu są posortowane rosnąco
 po wykładniku. Wielomian nie zawiera jednomianów o zerowych współczynnikach.
+
+Program można skompilować w wersji release za pomocą sekwencji poleceń:
+\code{.sh}
+    mkdir release
+    cd release
+    cmake ..
+    make
+    make doc
+\endcode
+
+lub w wersji debug:
+\code{.sh}
+mkdir debug
+cd debug
+cmake -D CMAKE_BUILD_TYPE=Debug ..
+make
+make doc
+\endcode
+W wyniku kompilacji w odpowiednim katalogu powstaje plik wykonywalny poly
+oraz dokumentacja.
 
 */
