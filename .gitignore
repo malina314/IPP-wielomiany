@@ -6,4 +6,6 @@ release/
 src/testy-duze-zadanie-1/
 CMakeLists.txt
 src/poly_example.c
+src/poly_example2.c
 src/skrypt.sh
+examples
