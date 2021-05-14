@@ -21,10 +21,8 @@ set(CMAKE_C_FLAGS_DEBUG "-g -O0")
 
 # Wskazujemy pliki źródłowe.
 set(SOURCE_FILES
-    src/poly.c
-    src/poly.h
-    src/poly_example.c
-        src/calc.c src/calc.h)
+    src/poly.c src/poly.h src/calc.c src/stack.c src/stack.h src/line.h src/vector.c
+    src/vector.h src/readInput.c src/readInput.h)
 
 # Wskazujemy plik wykonywalny.
 add_executable(poly ${SOURCE_FILES})

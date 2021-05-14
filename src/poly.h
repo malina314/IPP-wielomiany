@@ -219,4 +219,7 @@ bool PolyIsEq(const Poly *p, const Poly *q);
  */
 Poly PolyAt(const Poly *p, poly_coeff_t x);
 
+//todo implement this
+void PolyPrint(const Poly *p);
+
 #endif /* __POLY_H__ */
