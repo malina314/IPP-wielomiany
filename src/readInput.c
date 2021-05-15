@@ -90,7 +90,7 @@ char *ReadLine(ReadStatus *status) {
 
 // read input line by line, converts them to proper object and pushes them into
 // line vector.
-void readInput(LineVector *lv) {
+/*void readInput(LineVector *lv) {
     int nr = 0;
 
     while (1) {
@@ -118,4 +118,4 @@ void readInput(LineVector *lv) {
                 return;
         }
     }
-}
+}*/

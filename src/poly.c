@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 /**
  * Sprawdza, czy udało się zaalokować pamięć. Jeśli nie, kończy działanie
@@ -460,4 +461,45 @@ bool PolyIsEq(const Poly *p, const Poly *q) {
     }
 
     return false;
+}
+
+static void MonoPrint(const Mono *m) {
+    printf("(");
+    if (PolyIsCoeff(&m->p) || m->p.size == 1) {
+        PolyPrint(&m->p, false);
+    }
+    else {
+        printf("(");
+        PolyPrint(&m->p, false);
+        printf(")");
+    }
+    printf(",%d", m->exp);
+    printf(")");
+}
+
+// Jednomian reprezentujemy jako parę (coeff,exp), gdzie współczynnik coeff jest
+// wielomianem, a wykładnik exp jest liczbą nieujemną.
+//0
+//-2
+//(-1,2)
+//(1,0)+(1,2)
+//(-7,8)+((1,2),15)
+//(3,1)+(((4,4),100),2)
+void PolyPrint(const Poly *p, bool newLine) {
+    assert(PolyIsSorted(p));
+
+    if (PolyIsCoeff(p)) {
+        printf("%ld", p->coeff);
+    }
+    else {
+        MonoPrint(&p->arr[0]);
+        for (size_t i = 1; i < p->size; ++i) {
+            printf("+");
+            MonoPrint(&p->arr[i]);
+        }
+    }
+
+    if (newLine) {
+        printf("\n");
+    }
 }

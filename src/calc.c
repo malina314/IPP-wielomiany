@@ -176,7 +176,7 @@ void Calc(Line line, Stack *stack, size_t lineNr) {
             case PRINT:
                 if (!StackEmpty(stack)) {
                     Poly p = StackTop(stack);
-                    PolyPrint(&p);
+                    PolyPrint(&p, true);
                 }
                 else {
                     fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
@@ -190,24 +190,29 @@ void Calc(Line line, Stack *stack, size_t lineNr) {
 }
 
 char *zrobCosZOutputemReadLineaDawniejGetLinea();
+void testy();
+
 
 int main() {
-    Stack stack = StackNew();
+
+    testy();
+
+    /*Stack stack = StackNew();
     size_t lineNr = 0;
     while (IsNextLine()) {
         char *input = zrobCosZOutputemReadLineaDawniejGetLinea();
         // wcześniej ReadLine parsował
 
-        Line line = parseLine(input);
         if (line != NULL) {
+            Line line = parseLine(input);
             lineNr++;
             Calc(line);
         }
-    }
+    }*/
     return 0;
 }
 
-char *zrobCosZOutputemReadLineaDawniejGetLinea() {
+char *zrobCosZOutputemReadLineaDawniejGetLinea(int lineNr) {
     ReadStatus status;
     char *input = ReadLine(&status);
 
@@ -224,7 +229,97 @@ char *zrobCosZOutputemReadLineaDawniejGetLinea() {
             exit(0); //todo coś lepszego
         case READ_COMMENT:
         case READ_EMPTY_LINE:
-            return zrobCosZOutputemReadLineaDawniejGetLinea();
+            return zrobCosZOutputemReadLineaDawniejGetLinea(lineNr);
     }
 
+}
+
+
+//==================================================================
+//==================================================================
+//==================================================================
+//==================================================================
+//==================================================================
+//==================================================================
+
+
+#include <stdarg.h>
+
+#define CHECK_PTR(p)        \
+    do {                    \
+        if (p == NULL) {    \
+            exit(1);        \
+        }                   \
+    } while (0)
+
+#define C PolyFromCoeff
+
+static Mono M(Poly p, poly_exp_t n) {
+    return MonoFromPoly(&p, n);
+}
+
+static Poly MakePolyHelper(poly_exp_t dummy, ...) {
+    va_list list;
+    va_start(list, dummy);
+    size_t count = 0;
+    while (true) {
+        va_arg(list, Poly);
+        if (va_arg(list, poly_exp_t) < 0)
+            break;
+        count++;
+    }
+    va_start(list, dummy);
+    Mono *arr = calloc(count, sizeof(Mono));
+    CHECK_PTR(arr);
+    for (size_t i = 0; i < count; ++i) {
+        Poly p = va_arg(list, Poly);
+        arr[i] = MonoFromPoly(&p, va_arg(list, poly_exp_t));
+        assert(i == 0 || MonoGetExp(&arr[i]) > MonoGetExp(&arr[i - 1]));
+    }
+    va_end(list);
+    Poly res = PolyAddMonos(count, arr);
+    free(arr);
+    return res;
+}
+
+#define P(...) MakePolyHelper(0, __VA_ARGS__, PolyZero(), -1)
+
+void testy() {
+    Poly p;
+
+    p = C(0);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
+
+    p = C(1);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
+
+    p = P(C(1), 1);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
+
+    p = P(C(1), 0);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
+
+    p = P(C(0), 10);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
+
+    p = P(C(1), 1, C(2), 2, C(3), 3);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
+
+    p = P(P(C(1), 2), 3);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
+
+    p = P(P(P(P(C(2), 3), 4, P(C(7), 8), 9), 5), 6);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
+
+    p = P(P(P(P(C(2), 3), 4, P(C(7), 8), 9), 5), 6, C(10), 11);
+    PolyPrint(&p, true);
+    PolyDestroy(&p);
 }
