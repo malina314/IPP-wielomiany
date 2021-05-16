@@ -22,7 +22,7 @@
 
 void Calc(Line line, Stack *stack, size_t lineNr) {
     if (line.is_poly) {
-        StackPush(stack, line.p);
+        StackPush(stack, *line.p);
     }
     else {
         switch (line.c) {
@@ -195,16 +195,25 @@ void testy();
 
 int main() {
 
-    testy();
+    //testy();
 
+//    char *end;
+//    errno = 0;
+//    unsigned long long x = strtoull("18446744073709551616", &end, 10);
+//    if (errno == ERANGE) {
+//        printf("wczytal sie %llu", x);
+//    } else {
+//        printf("poprawnie sie nie wczytal");
+//    }
+//    printf("%lu, %c", x, *end);
     /*Stack stack = StackNew();
     size_t lineNr = 0;
     while (IsNextLine()) {
         char *input = zrobCosZOutputemReadLineaDawniejGetLinea();
         // wcześniej ReadLine parsował
+        Line *line = parseLine(input);
 
         if (line != NULL) {
-            Line line = parseLine(input);
             lineNr++;
             Calc(line);
         }

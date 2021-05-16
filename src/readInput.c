@@ -58,7 +58,7 @@ char *ReadLine(ReadStatus *status) {
 
      do {
         if (IsLegalCaracter(c)) {
-            CVectorPush(&input, (char)toupper(c)); // todo wywalić to upper jeżeli nie potrzebne
+            CVectorPush(&input, c);
         }
         else {
             *status = possibleError;
