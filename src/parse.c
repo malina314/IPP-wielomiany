@@ -83,7 +83,8 @@ Line Parse(const CVector *str, size_t lineNr) {
                 size_t arg = strtoull(str->items + 7, &end, 10);
 
                 if (errno == ERANGE || *end != '\0') {
-                    fprintf(stderr, "ERROR %zu DEG BY WRONG VARIABLE\n", lineNr);
+                    fprintf(stderr, "ERROR %zu DEG BY WRONG VARIABLE\n",
+                            lineNr);
                     return WrongLine();
                 }
 
@@ -117,9 +118,10 @@ Line Parse(const CVector *str, size_t lineNr) {
         return WrongLine();
     }
     else { // wielomian
-        if (!IsCorrectString(str)) {
+        if (!IsCorrectString(str)) { // todo chyba jest dziwny bug że zawsze jest true
             fprintf(stderr, "ERROR %zu POLY\n", lineNr);
             return WrongLine();
         }
+        // todo parsowanie wielomianow
     }
 }

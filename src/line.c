@@ -6,7 +6,7 @@ Line WrongLine() {
     return (Line) {.p = NULL, .is_poly = true};
 }
 
-bool IsCorrectLine(Line *line) {
+bool IsCorrectLine(const Line *line) {
     return line->p != NULL || line->is_poly == false;
 }
 
@@ -22,8 +22,8 @@ Line PolyLine(Poly *p) {
     return (Line) {.p = p, .is_poly = true};
 }
 
-void LineFree(Line *self) {
-    if (self->is_poly) {
+void LineFree(const Line *self) {
+    if (self->is_poly && self->p != NULL) {
         PolyDestroy(self->p);
     }
 }

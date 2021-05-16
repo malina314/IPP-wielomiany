@@ -22,7 +22,7 @@ typedef struct {
 
 Line WrongLine();
 
-bool IsCorrectLine(Line *line);
+bool IsCorrectLine(const Line *line);
 
 Line CommandLine(Command command);
 
@@ -30,6 +30,6 @@ Line CommandLineWithArg(Command command, poly_coeff_t arg);
 
 Line PolyLine(Poly *p);
 
-void LineFree(Line *self);
+void LineFree(const Line *self);
 
 #endif //POLYNOMIALS_LINE_H

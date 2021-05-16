@@ -8,6 +8,9 @@
  *   defined in related header.
  */
 
+//todo
+// dodac const tam gdzie potrzeba
+
 #include "vector.h"
 
 #include <stdlib.h>

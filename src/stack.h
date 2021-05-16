@@ -12,11 +12,17 @@ typedef struct {
 } Stack;
 
 Stack StackNew();
-void StackFree(Stack *self);
-void StackPush(Stack *self, Poly p);
-void StackPop(Stack *self);
-void StackHardPop(Stack *self);
-Poly StackTop(Stack *self);
-bool StackEmpty(Stack *self);
+
+void StackFree(const Stack *self);
+
+void StackPush(const Stack *self, Poly p);
+
+void StackPop(const Stack *self);
+
+void StackHardPop(const Stack *self);
+
+Poly StackTop(const Stack *self);
+
+bool StackEmpty(const Stack *self);
 
 #endif //POLYNOMIALS_STACK_H

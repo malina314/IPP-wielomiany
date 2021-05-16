@@ -9,20 +9,13 @@
 
 #include "readInput.h"
 #include "vector.h"
-
 #include <stdio.h>
-#include <ctype.h>
 #include <stdbool.h>
 
 // reads all chars to '\n' or EOF and discard them
 static inline void SkipLine() {
     char c;
     while ((c = (char)getchar()) != EOF && c != '\n');
-}
-
-bool IsLegalCaracter(char c) {
-    return isalnum(c) || c == '-' || c == '+' || c == '(' || c == ')' ||
-        c == ' ' || c == '\n';
 }
 
 // reads line, checks if it is comment or contains illegal characters

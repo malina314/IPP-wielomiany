@@ -22,7 +22,7 @@
 //PRINT – wypisuje na standardowe wyjście wielomian z wierzchołka stosu;
 //POP – usuwa wielomian z wierzchołka stosu.
 
-void Calc(Line *line, Stack *stack, size_t lineNr) {
+void Calc(const Line *line, Stack *stack, size_t lineNr) {
     if (line->is_poly) {
         StackPush(stack, *line->p);
     }
