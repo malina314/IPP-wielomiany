@@ -2,8 +2,10 @@
 #include "line.h"
 #include "stack.h"
 #include "vector.h"
+#include "parse.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 //ZERO – wstawia na wierzchołek stosu wielomian tożsamościowo równy zeru;
 //IS_COEFF – sprawdza, czy wielomian na wierzchołku stosu jest współczynnikiem – wypisuje na standardowe wyjście 0 lub 1;
@@ -20,12 +22,12 @@
 //PRINT – wypisuje na standardowe wyjście wielomian z wierzchołka stosu;
 //POP – usuwa wielomian z wierzchołka stosu.
 
-void Calc(Line line, Stack *stack, size_t lineNr) {
-    if (line.is_poly) {
-        StackPush(stack, *line.p);
+void Calc(Line *line, Stack *stack, size_t lineNr) {
+    if (line->is_poly) {
+        StackPush(stack, *line->p);
     }
     else {
-        switch (line.c) {
+        switch (line->c) {
             case ZERO:
                 StackPush(stack, PolyZero());
                 break;
@@ -156,7 +158,7 @@ void Calc(Line line, Stack *stack, size_t lineNr) {
             case DEG_BY:
                 if (!StackEmpty(stack)) {
                     Poly p = StackTop(stack);
-                    printf("%d\n", PolyDegBy(&p, (size_t)line.arg));
+                    printf("%d\n", PolyDegBy(&p, (size_t)line->arg));
                 }
                 else {
                     fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
@@ -166,7 +168,7 @@ void Calc(Line line, Stack *stack, size_t lineNr) {
                 if (!StackEmpty(stack)) {
                     Poly p = StackTop(stack);
                     StackPop(stack);
-                    StackPush(stack, PolyAt(&p, line.arg));
+                    StackPush(stack, PolyAt(&p, line->arg));
                     PolyDestroy(&p);
                 }
                 else {
@@ -189,7 +191,7 @@ void Calc(Line line, Stack *stack, size_t lineNr) {
     }
 }
 
-char *zrobCosZOutputemReadLineaDawniejGetLinea();
+//char *zrobCosZOutputemReadLineaDawniejGetLinea();
 void testy();
 
 
@@ -206,43 +208,29 @@ int main() {
 //        printf("poprawnie sie nie wczytal");
 //    }
 //    printf("%lu, %c", x, *end);
-    /*Stack stack = StackNew();
-    size_t lineNr = 0;
-    while (IsNextLine()) {
-        char *input = zrobCosZOutputemReadLineaDawniejGetLinea();
-        // wcześniej ReadLine parsował
-        Line *line = parseLine(input);
+// =======================================================================
 
-        if (line != NULL) {
-            lineNr++;
-            Calc(line);
+    Stack stack = StackNew();
+    size_t lineNr = 1;
+    bool isReadEnd = false;
+
+    while (!isReadEnd) {
+        CVector *input = ReadLine(&isReadEnd);
+        if (input != NULL) {
+            Line line = Parse(input, lineNr);
+            if (IsCorrectLine(&line)) {
+                Calc(&line, &stack, lineNr);
+            }
+            LineFree(&line);
+            CVectorFree(input);
         }
-    }*/
-    return 0;
-}
-
-char *zrobCosZOutputemReadLineaDawniejGetLinea(int lineNr) {
-    ReadStatus status;
-    char *input = ReadLine(&status);
-
-    switch (status) {
-        case READ_OK:
-            return input;
-        case WRONG_COMMAND:
-            fprintf(stderr, "ERROR %zu WRONG COMMAND\n", lineNr);
-            break;
-        case WRONG_POLY:
-            fprintf(stderr, "ERROR %zu WRONG POLY\n", lineNr);
-            break;
-        case READ_END:
-            exit(0); //todo coś lepszego
-        case READ_COMMENT:
-        case READ_EMPTY_LINE:
-            return zrobCosZOutputemReadLineaDawniejGetLinea(lineNr);
+        lineNr++;
     }
 
-}
+    StackFree(&stack);
 
+    return 0;
+}
 
 //==================================================================
 //==================================================================

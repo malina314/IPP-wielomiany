@@ -11,7 +11,7 @@ typedef enum {
 
 typedef struct {
     union {
-        Poly p;
+        Poly *p;
         struct {
             Command c;
             poly_coeff_t arg; // castowanie z signed na unsigbed jest ok
@@ -19,5 +19,17 @@ typedef struct {
     };
     bool is_poly;
 } Line;
+
+Line WrongLine();
+
+bool IsCorrectLine(Line *line);
+
+Line CommandLine(Command command);
+
+Line CommandLineWithArg(Command command, poly_coeff_t arg);
+
+Line PolyLine(Poly *p);
+
+void LineFree(Line *self);
 
 #endif //POLYNOMIALS_LINE_H

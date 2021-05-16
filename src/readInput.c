@@ -33,39 +33,27 @@ bool IsLegalCaracter(char c) {
  * @param status
  * @return
  */
-char *ReadLine(ReadStatus *status) {
+CVector *ReadLine(bool *isReadEnd) {
     char c = (char)getchar();
-    ReadStatus possibleError;
 
     if (feof(stdin)) {
-        *status = READ_END;
+        *isReadEnd = true;
         return NULL;
     }
 
     if (c == '#') {
         SkipLine();
-        *status = READ_COMMENT;
         return NULL;
     }
-    else if (isalpha(c)) {
-        possibleError = WRONG_COMMAND;
-    }
-    else {
-        possibleError = WRONG_POLY;
+
+    if (c == '\n') {
+        return NULL;
     }
 
-    CVector input = CVectorNew();
+    CVector input = CVectorNew(); // todo zaalokowac na stercie
 
      do {
-        if (IsLegalCaracter(c)) {
-            CVectorPush(&input, c);
-        }
-        else {
-            *status = possibleError;
-            CVectorFree(&input);
-            SkipLine();
-            return NULL;
-        }
+         CVectorPush(&input, c);
     } while (c != '\n' && (c = (char)getchar()) != EOF);
 
     if (c != '\n') {
@@ -74,48 +62,5 @@ char *ReadLine(ReadStatus *status) {
 
     CVectorPush(&input, '\0');
 
-    // jeżeli linia zawierała tylko '\n'
-    if (input.size == 2) {
-        *status = READ_EMPTY_LINE;
-        CVectorFree(&input);
-        return NULL;
-    }
-
-    *status = READ_OK;
-
-    return input.items;
+    return &input;
 }
-
-
-
-// read input line by line, converts them to proper object and pushes them into
-// line vector.
-/*void readInput(LineVector *lv) {
-    int nr = 0;
-
-    while (1) {
-        Line *line = LineNew(++nr);
-        int status = ReadLine(line);
-
-        switch (status) {
-            case READ_OK:
-                LineVectorPush(lv, *line);
-                free(line);
-                break;
-            case READ_ERROR:
-                fprintf(stderr, "ERROR %d\n", line->nr);
-                LineFree(line);
-                free(line);
-                break;
-            case READ_EMPTY_LINE:
-            case READ_COMMENT:
-                LineFree(line);
-                free(line);
-                break;
-            case READ_END:
-                LineFree(line);
-                free(line);
-                return;
-        }
-    }
-}*/

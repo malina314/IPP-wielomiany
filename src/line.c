@@ -21,3 +21,9 @@ Line CommandLineWithArg(Command command, poly_coeff_t arg) {
 Line PolyLine(Poly *p) {
     return (Line) {.p = p, .is_poly = true};
 }
+
+void LineFree(Line *self) {
+    if (self->is_poly) {
+        PolyDestroy(self->p);
+    }
+}

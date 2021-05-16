@@ -11,16 +11,19 @@
 #ifndef SIMILAR_LINES_READINPUT_H
 #define SIMILAR_LINES_READINPUT_H
 
-typedef enum {
-    READ_OK,
-    WRONG_COMMAND,
-    WRONG_POLY,
-    READ_END,
-    READ_COMMENT,
-    READ_EMPTY_LINE
-} ReadStatus;
+#include "vector.h"
+#include <stdbool.h>
 
-char *ReadLine(ReadStatus *status);
+//typedef enum {
+//    READ_OK,
+//    WRONG_COMMAND,
+//    WRONG_POLY,
+//    READ_END,
+//    READ_COMMENT,
+//    READ_EMPTY_LINE
+//} ReadStatus;
+//
+CVector *ReadLine(bool *isReadEnd);
 
 #endif //SIMILAR_LINES_READINPUT_H
 
