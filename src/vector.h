@@ -58,7 +58,7 @@ typedef struct {
     size_t allocated;
 } ULLVectorVector;
 
-CVector CVectorNew();
+CVector *CVectorNew();
 void CVectorFree(CVector *self);
 void CVectorPush(CVector *self, char c);
 

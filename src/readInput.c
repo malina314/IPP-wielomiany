@@ -50,17 +50,17 @@ CVector *ReadLine(bool *isReadEnd) {
         return NULL;
     }
 
-    CVector input = CVectorNew(); // todo zaalokowac na stercie
+    CVector *input = CVectorNew();
 
      do {
-         CVectorPush(&input, c);
+         CVectorPush(input, c);
     } while (c != '\n' && (c = (char)getchar()) != EOF);
 
     if (c != '\n') {
-        CVectorPush(&input, '\n');
+        CVectorPush(input, '\n');
     }
 
-    CVectorPush(&input, '\0');
+    CVectorPush(input, '\0');
 
-    return &input;
+    return input;
 }

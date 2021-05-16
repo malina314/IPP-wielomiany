@@ -17,8 +17,8 @@
 const int INITIAL_VECTOR_SIZE = 4;
 const int INITIAL_CHAR_VECTOR_SIZE = 32;
 
-CVector CVectorNew() {
-    CVector obj = {NULL, 0, 0};
+CVector *CVectorNew() {
+    CVector *obj = calloc(1, sizeof (CVector));
     return obj;
 }
 
