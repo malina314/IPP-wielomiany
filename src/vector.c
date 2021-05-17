@@ -48,6 +48,10 @@ void CVectorPush(CVector *self, char c) {
     self->items[self->size++] = c;
 }
 
+void CVectorPop(CVector *self) {
+    self->size--;
+}
+
 ULLVector ULLVectorNew() {
     ULLVector obj = {NULL, 0, 0};
     return obj;

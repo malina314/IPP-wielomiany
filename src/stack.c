@@ -7,14 +7,14 @@ Stack StackNew() {
     return obj;
 }
 
-void StackFree(const Stack *self) {
+void StackFree(Stack *self) {
     for (size_t i = 0; i < self->size; ++i) {
         PolyDestroy(&self->items[i]);
     }
     free(self->items);
 }
 
-void StackPush(const Stack *self, Poly p) {
+void StackPush(Stack *self, Poly p) {
     size_t typeSize = sizeof p;
     if (self->allocated == 0) {
         self->items = malloc(INITIAL_STACK_SIZE * typeSize);
@@ -33,11 +33,11 @@ void StackPush(const Stack *self, Poly p) {
     self->items[self->size++] = p;
 }
 
-void StackPop(const Stack *self) {
+void StackPop(Stack *self) {
     self->size--;
 }
 
-void StackHardPop(const Stack *self) {
+void StackHardPop(Stack *self) {
     PolyDestroy(&self->items[--self->size]);
 }
 
@@ -46,5 +46,5 @@ Poly StackTop(const Stack *self) {
 }
 
 bool StackEmpty(const Stack *self) {
-    return self->size > 0;
+    return self->size == 0;
 }

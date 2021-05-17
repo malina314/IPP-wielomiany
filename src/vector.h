@@ -61,6 +61,7 @@ typedef struct {
 CVector *CVectorNew();
 void CVectorFree(CVector *self);
 void CVectorPush(CVector *self, char c);
+void CVectorPop(CVector *self);
 
 ULLVector ULLVectorNew();
 void ULLVectorFree(ULLVector *self);

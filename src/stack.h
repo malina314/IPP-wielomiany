@@ -13,13 +13,13 @@ typedef struct {
 
 Stack StackNew();
 
-void StackFree(const Stack *self);
+void StackFree(Stack *self);
 
-void StackPush(const Stack *self, Poly p);
+void StackPush(Stack *self, Poly p);
 
-void StackPop(const Stack *self);
+void StackPop(Stack *self);
 
-void StackHardPop(const Stack *self);
+void StackHardPop(Stack *self);
 
 Poly StackTop(const Stack *self);
 

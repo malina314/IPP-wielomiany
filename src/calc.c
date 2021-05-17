@@ -191,14 +191,12 @@ void Calc(const Line *line, Stack *stack, size_t lineNr) {
     }
 }
 
-//char *zrobCosZOutputemReadLineaDawniejGetLinea();
 void testy();
-
 
 int main() {
 
-    //testy();
-
+//    testy();
+//    return 0;
 //    char *end;
 //    errno = 0;
 //    unsigned long long x = strtoull("18446744073709551616", &end, 10);

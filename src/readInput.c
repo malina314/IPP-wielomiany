@@ -11,6 +11,7 @@
 #include "vector.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <assert.h>
 
 // reads all chars to '\n' or EOF and discard them
 static inline void SkipLine() {
@@ -27,6 +28,8 @@ static inline void SkipLine() {
  * @return
  */
 CVector *ReadLine(bool *isReadEnd) {
+    assert(isReadEnd);
+
     char c = (char)getchar();
 
     if (feof(stdin)) {
@@ -49,8 +52,8 @@ CVector *ReadLine(bool *isReadEnd) {
          CVectorPush(input, c);
     } while (c != '\n' && (c = (char)getchar()) != EOF);
 
-    if (c != '\n') {
-        CVectorPush(input, '\n');
+    if (c == '\n') {
+        CVectorPop(input);
     }
 
     CVectorPush(input, '\0');
