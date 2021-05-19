@@ -384,7 +384,7 @@ poly_exp_t PolyDeg(const Poly *p) {
         return 0;
     }
 
-    size_t deg = 0;
+    poly_exp_t deg = 0;
 
     for (size_t i = 0; i < p->size; ++i) {
         deg = Max(deg, PolyDeg(&p->arr[i].p) + p->arr[i].exp);
