@@ -14,7 +14,7 @@ static inline bool IsPrefix(const char *pre, const char *str) {
 
 static inline bool IsLegalCaracter(char c) {
     return isupper(c) || isdigit(c) || c == '-' || c == '+' || c == '(' ||
-        c == ')' || c == ' ' || c == '\n';
+        c == ')' || c == ' ' || c == '_' || c == ',' || c == '\n';
 }
 
 static bool IsCorrectString(const CVector *str) {
@@ -150,13 +150,19 @@ Mono ParseMono(char *begin, char **end, bool *err) {
     // można bez ifa bo w sumie wielomian i tak sprawdza czy jest współczynnikiem czy jednomianem
 
     //if (*begin == '(') {
-        p = ParsePolyHelper(begin + 1, end, err);
+        p = ParsePolyHelper(begin, end, err);
         if (*err) {
             return (Mono) {};
         }
 
+        if (**end == '\0') {
+            *err = true;
+            return (Mono) {};
+        }
+
         // teraz *end wskazuje na ','
-        int exp = ParseExp(begin + 1, end, err);
+        int exp = ParseExp((*end) + 1, end, err);
+
         if (*err) {
             return (Mono) {};
         }
@@ -169,7 +175,7 @@ Mono ParseMono(char *begin, char **end, bool *err) {
 }
 
 // begin wskazuje na ( lub digit ze znakiem -> tylko współczynnik
-// end wskazuje na ) lub ,
+// end wskazuje na \0 lub ,
 Poly ParsePolyHelper(char *begin, char **end, bool *err) {
     if (IsDigitOrSign(*begin)) { // parsowany wielomian jest współczynnikiem
         errno = 0;
@@ -180,32 +186,37 @@ Poly ParsePolyHelper(char *begin, char **end, bool *err) {
         return PolyFromCoeff(x);
     }
     else { // parsowany wielomian jest jednomianem lub sumą jednomianów
-        // todo policzyć ile jest '+' w tej sumie
-        size_t monosCount = 1;
+        MVector monos = MVectorNew();
 
-        Mono *monos = malloc(monosCount * sizeof (Mono));
-
-        for (size_t i = 0; i < monosCount; ++i) {
-            // niezmiennik: begin wskazuje na (
-            monos[i] = ParseMono(begin + 1, end, err);
+        // niezmiennik: begin wskazuje na (
+        while (true) {
+            MVectorPush(&monos, ParseMono(begin + 1, end, err));
             if (*err) {
+                MVectorDeepFree(&monos);
                 return (Poly) {};
+            }
+
+            // po wyjściu z ParseMono *end wskazuje na ) kończący jednomian
+            // wielomian ma postać (..)\0 lub (..)+(..)+...+(..),
+            // ale nigdy ((..)+(..)+...+(..))
+
+            if (*(*end + 1) == '\0' || *(*end + 1) == ',') { // todo po testach wyciągnąć do osobnej funkcji
+                (*end)++;
+                break;
             }
 
             if (*(*end + 1) != '+' || *(*end + 2) != '(') {
                 *err = true;
-
-                //todo zwolnić pamięć: wszyskie jednomiany w monos i samo monos
-
+                MVectorDeepFree(&monos);
                 return (Poly) {};
             }
 
-            (*end) += 2;
+            begin = (*end) + 2;
         }
 
-        Poly p = PolyAddMonos(monosCount, monos);
+        Poly p = PolyAddMonos(monos.size, monos.items);
 
-        free(monos);
+        MVectorFree(&monos);
 
         return p;
     }
@@ -224,7 +235,7 @@ Line ParsePoly(const CVector *str, size_t lineNr) {
     Poly *p = malloc(sizeof (Poly));
     *p = ParsePolyHelper(str->items, &end, &err);
 
-    if (err) {
+    if (err || *end != '\0') {
         fprintf(stderr, "ERROR %zu POLY\n", lineNr);
         return WrongLine();
     }
@@ -234,9 +245,9 @@ Line ParsePoly(const CVector *str, size_t lineNr) {
 
 Line Parse(const CVector *str, size_t lineNr) {
     if (isalpha(str->items[0])) {
-        ParseCommand(str, lineNr);
+        return ParseCommand(str, lineNr);
     }
     else {
-        ParsePoly(str, lineNr);
+        return ParsePoly(str, lineNr);
     }
 }

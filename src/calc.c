@@ -185,13 +185,27 @@ void Calc(const Line *line, Stack *stack, size_t lineNr) {
                 }
                 break;
             case POP:
-                StackHardPop(stack);
+                if (!StackEmpty(stack)) {
+                    StackHardPop(stack);
+                }
+                else {
+                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                }
                 break;
         }
     }
 }
 
 void testy();
+//0
+//1
+//(1,1)
+//1
+//0
+//(1,1)+(2,2)+(3,3)
+//((1,2),3)
+//(((((2,3),4)+((7,8),9)),5),6)
+//(((((2,3),4)+((7,8),9)),5),6)+(10,11)
 
 int main() {
 
@@ -219,7 +233,7 @@ int main() {
             if (IsCorrectLine(&line)) {
                 Calc(&line, &stack, lineNr);
             }
-            LineFree(&line);
+            //LineFree(&line);
             CVectorFree(input);
         }
         lineNr++;
