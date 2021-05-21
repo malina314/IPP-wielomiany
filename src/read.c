@@ -7,7 +7,7 @@
  *   This file implements reading lines from stdin operations.
  */
 
-#include "readInput.h"
+#include "read.h"
 #include "vector.h"
 #include <stdio.h>
 #include <stdbool.h>

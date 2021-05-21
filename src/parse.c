@@ -1,14 +1,21 @@
-#include "parse.h"
 #include "line.h"
+#include "parse.h"
 #include "vector.h"
-#include <stdbool.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <errno.h>
-#include <assert.h>
-#include <limits.h>
 
+#include <assert.h>
+#include <ctype.h>
+#include <errno.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+
+/**
+ * Sprawdza czy @pre jest prefiksem @str.
+ * @param[in] pre : łańcuch znaków
+ * @param[in] str : łańcuch znaków
+ * @return Czy @pre jest prefiksem @str?
+ */
 static inline bool IsPrefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
@@ -18,6 +25,11 @@ static inline bool IsPrefix(const char *pre, const char *str) {
 //    return cv->size == strlen(str) + 1 && strcmp(cv->items, "ZERO") == 0;
 //}
 
+/**
+ *
+ * @param c
+ * @return
+ */
 static inline bool IsLegalCaracter(char c) {
     return isupper(c) || isdigit(c) || c == '-' || c == '+' || c == '(' ||
         c == ')' || c == ' ' || c == '_' || c == ',' || c == '\n';

@@ -1,34 +1,24 @@
-#include "readInput.h"
 #include "line.h"
+#include "parse.h"
+#include "read.h"
 #include "stack.h"
 #include "vector.h"
-#include "parse.h"
 
-#include <stdio.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 //TODO static inline wszędzie
-
 //TODO dokumentacja
-
 //todo MainPage.dox
+//todo zbić allocki
 
-//ZERO – wstawia na wierzchołek stosu wielomian tożsamościowo równy zeru;
-//IS_COEFF – sprawdza, czy wielomian na wierzchołku stosu jest współczynnikiem – wypisuje na standardowe wyjście 0 lub 1;
-//IS_ZERO – sprawdza, czy wielomian na wierzchołku stosu jest tożsamościowo równy zeru – wypisuje na standardowe wyjście 0 lub 1;
-//CLONE – wstawia na stos kopię wielomianu z wierzchołka;
-//ADD – dodaje dwa wielomiany z wierzchu stosu, usuwa je i wstawia na wierzchołek stosu ich sumę;
-//MUL – mnoży dwa wielomiany z wierzchu stosu, usuwa je i wstawia na wierzchołek stosu ich iloczyn;
-//NEG – neguje wielomian na wierzchołku stosu;
-//SUB – odejmuje od wielomianu z wierzchołka wielomian pod wierzchołkiem, usuwa je i wstawia na wierzchołek stosu różnicę;
-//IS_EQ – sprawdza, czy dwa wielomiany na wierzchu stosu są równe – wypisuje na standardowe wyjście 0 lub 1;
-//DEG – wypisuje na standardowe wyjście stopień wielomianu (−1 dla wielomianu tożsamościowo równego zeru);
-//DEG_BY idx – wypisuje na standardowe wyjście stopień wielomianu ze względu na zmienną o numerze idx (−1 dla wielomianu tożsamościowo równego zeru);
-//AT x – wylicza wartość wielomianu w punkcie x, usuwa wielomian z wierzchołka i wstawia na stos wynik operacji;
-//PRINT – wypisuje na standardowe wyjście wielomian z wierzchołka stosu;
-//POP – usuwa wielomian z wierzchołka stosu.
-
-void Calc(const Line *line, Stack *stack, size_t lineNr) {
+/**
+ * Wykonuje polecenie lub wstawia wielomian na stos.
+ * @param[in] line : wiersz z poleceniem lub wielomianem
+ * @param[in,out] stack : stos
+ * @param[in] lineNr : numer wiersza
+ */
+static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
     if (line->is_poly) {
         StackPush(stack, *line->p);
     }
@@ -202,39 +192,12 @@ void Calc(const Line *line, Stack *stack, size_t lineNr) {
     }
 }
 
-//#define XXX
-
-#ifdef XXX
-void testy();
-#endif
-//0
-//1
-//(1,1)
-//1
-//0
-//(1,1)+(2,2)+(3,3)
-//((1,2),3)
-//((((2,3),4)+((7,8),9),5),6)
-//((((2,3),4)+((7,8),9),5),6)+(10,11)
-
+/**
+ * Funkcja główna programu, realizuje zadanie kalkulatora przetwarzając kolejne
+ * wiersze wejścia.
+ * @return 0
+ */
 int main() {
-
-//    void *x = malloc(240);
-//    printf("%p\n", x);
-
-//    testy();
-//    return 0;
-//    char *end;
-//    errno = 0;
-//    unsigned long long x = strtoull("18446744073709551616", &end, 10);
-//    if (errno == ERANGE) {
-//        printf("wczytal sie %llu", x);
-//    } else {
-//        printf("poprawnie sie nie wczytal");
-//    }
-//    printf("%lu, %c", x, *end);
-// =======================================================================
-
     Stack stack = StackNew();
     size_t lineNr = 1;
     bool isReadEnd = false;
@@ -259,93 +222,3 @@ int main() {
 
     return 0;
 }
-
-//==================================================================
-//==================================================================
-//==================================================================
-//==================================================================
-//==================================================================
-//==================================================================
-
-#ifdef XXX
-#include <stdarg.h>
-
-#define CHECK_PTR(p)        \
-    do {                    \
-        if (p == NULL) {    \
-            exit(1);        \
-        }                   \
-    } while (0)
-
-#define C PolyFromCoeff
-
-static Mono M(Poly p, poly_exp_t n) {
-    return MonoFromPoly(&p, n);
-}
-
-static Poly MakePolyHelper(poly_exp_t dummy, ...) {
-    va_list list;
-    va_start(list, dummy);
-    size_t count = 0;
-    while (true) {
-        va_arg(list, Poly);
-        if (va_arg(list, poly_exp_t) < 0)
-            break;
-        count++;
-    }
-    va_start(list, dummy);
-    Mono *arr = calloc(count, sizeof(Mono));
-    CHECK_PTR(arr);
-    for (size_t i = 0; i < count; ++i) {
-        Poly p = va_arg(list, Poly);
-        arr[i] = MonoFromPoly(&p, va_arg(list, poly_exp_t));
-        assert(i == 0 || MonoGetExp(&arr[i]) > MonoGetExp(&arr[i - 1]));
-    }
-    va_end(list);
-    Poly res = PolyAddMonos(count, arr);
-    free(arr);
-    return res;
-}
-
-#define P(...) MakePolyHelper(0, __VA_ARGS__, PolyZero(), -1)
-
-void testy() {
-    Poly p;
-
-    p = C(0);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-
-    p = C(1);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-
-    p = P(C(1), 1);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-
-    p = P(C(1), 0);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-
-    p = P(C(0), 10);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-
-    p = P(C(1), 1, C(2), 2, C(3), 3);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-
-    p = P(P(C(1), 2), 3);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-
-    p = P(P(P(P(C(2), 3), 4, P(C(7), 8), 9), 5), 6);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-
-    p = P(P(P(P(C(2), 3), 4, P(C(7), 8), 9), 5), 6, C(10), 11);
-    PolyPrint(&p, true);
-    PolyDestroy(&p);
-}
-#endif
