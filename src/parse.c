@@ -26,43 +26,65 @@ static inline bool IsPrefix(const char *pre, const char *str) {
 //}
 
 /**
- *
- * @param c
- * @return
+ * Sprawdza czy @c jest dozwolonym znakiem w wielomianie.
+ * @param[in] c : znak
+ * @return Czy @c jest dozwolonym znakiem w wielomianie?
  */
 static inline bool IsLegalCaracter(char c) {
-    return isupper(c) || isdigit(c) || c == '-' || c == '+' || c == '(' ||
-        c == ')' || c == ' ' || c == '_' || c == ',' || c == '\n';
+    return isdigit(c) || c == '-' || c == '+' || c == '(' || c == ')' ||
+        c == ',';
 }
 
-static bool IsCorrectString(const CVector *str) {
+/**
+ * Sprawdza czy wiersz zawiera niedozwolone dla wielomianu znaki.
+ * @param[in] str : wiersz
+ * @return Czy wiersz zawiera niedozwolone dla wielomianu znaki?
+ */
+static bool HasIllegalCharacters(const CVector *str) {
     for (size_t i = 0; i < str->size - 1; ++i) {
         if (!IsLegalCaracter(str->items[i])) {
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
-static inline bool IsDigitOrSign(char c) {
+/**
+ * Sprawdza czy @c jest cyfrą lub znakiem '-'.
+ * @param[in] c : znak
+ * @return Czy @c jest cyfrą lub znakiem '-'?
+ */
+static inline bool IsDigitOrMinus(char c) {
     return isdigit(c) || c == '-';
 }
 
+/**
+ * Sprawdza czy polecenie DEG_BY zawiera argument.
+ * @param[in] str : wiersz
+ * @return Czy polecenie DEG_BY zawiera argument?
+ */
 static inline bool HasDegByAnArgument(const CVector *str) {
     return str->size >= 8 && str->items[6] == ' ' && isdigit(str->items[7]);
 }
 
+/**
+ * Sprawdza czy polecenie AT zawiera argument.
+ * @param[in] str : wiersz
+ * @return Czy polecenie AT zawiera argument?
+ */
 static inline bool HasAtAnArgument(const CVector *str) {
     return str->size >= 4 && str->items[2] == ' ' &&
-        IsDigitOrSign(str->items[3]);
+            IsDigitOrMinus(str->items[3]);
 }
 
-Line ParseCommand(const CVector *str, size_t lineNr) {
-//    if (!IsCorrectString(str)) {
-//        fprintf(stderr, "ERROR %zu WRONG COMMAND\n", lineNr);
-//        return WrongLine();
-//    }
-
+/**
+ * Konwertuje wiersz na obiekt typu \ref Line reprezentujący wiersz zawierający
+ * polecenie.
+ * @param[in] str : wiersz
+ * @param[in] lineNr : numer linii
+ * @return skonwertowany wiersz
+ */
+static Line ParseCommand(const CVector *str, size_t lineNr) {
     if (strcmp(str->items, "ZERO") == 0) {
         return CommandLine(ZERO);
     }
@@ -106,8 +128,7 @@ Line ParseCommand(const CVector *str, size_t lineNr) {
             size_t arg = strtoull(str->items + 7, &end, 10);
 
             if (errno == ERANGE || *end != '\0') {
-                fprintf(stderr, "ERROR %zu DEG BY WRONG VARIABLE\n",
-                        lineNr);
+                fprintf(stderr, "ERROR %zu DEG BY WRONG VARIABLE\n", lineNr);
                 return WrongLine();
             }
 
@@ -141,9 +162,17 @@ Line ParseCommand(const CVector *str, size_t lineNr) {
     return WrongLine();
 }
 
-// begin wskazuje na cyfrę bez znaku
-// end po wyjściu wskazuje na )
-int ParseExp(char *begin, char **end, bool *err) {
+/**
+ * Konwertuje wykładnik jednomianu. Funkcja ustawia @end na pierwszy znak po
+ * skonwertowanym fragmencie (dla poprawnego jednomianu jest to ')').
+ * Funkcja ustawia @err na true jeżeli @begin nie wskazuje na cyfrę lub gdy
+ * wykładnik wykracza poza zakres lub gdy po wykładniku nie stoi znak ')'.
+ * @param[in] begin : początek wykładnika
+ * @param[out] end : wskaźnik na pierwszy znak po skonwertowanym fragmencie
+ * @param[out] err : flaga błędu
+ * @return wykładnik
+ */
+static int ParseExp(char *begin, char **end, bool *err) {
     if (!isdigit(*begin)) {
         *err = true;
         return 0;
@@ -154,16 +183,25 @@ int ParseExp(char *begin, char **end, bool *err) {
 
     if (errno == ERANGE || **end != ')' || x > (long)INT_MAX) {
         *err = true;
+        return 0;
     }
 
     return x;
 }
 
-Poly ParsePolyHelper(char *begin, char **end, bool *err);
+static Poly ParsePolyHelper(char *begin, char **end, bool *err);
 
-// begin wskazuje na pierwszy digit (lub znak +-) lub nawias kolejnego poly
-// end po wyjściu wskazuje na )
-Mono ParseMono(char *begin, char **end, bool *err) {
+/**
+ * Konwertuje jednomian. Funkcja ustawia @end na pierwszy znak po
+ * skonwertowanym fragmencie (dla poprawnego jednomianu jest to ')').
+ * Funkcja ustawia @err na true jeżeli @begin nie wskazuje na '\0' lub gdy
+ * jednomian jest niepoprawny.
+ * @param[in] begin : początek jednomianu (pierwszy znak po '(')
+ * @param[out] end : wskaźnik na pierwszy znak po skonwertowanym fragmencie
+ * @param[out] err : flaga błędu
+ * @return jednomian
+ */
+static Mono ParseMono(char *begin, char **end, bool *err) {
     if (*begin == '\0') {
         *err = true;
         return (Mono) {};
@@ -171,50 +209,53 @@ Mono ParseMono(char *begin, char **end, bool *err) {
 
     Poly p;
 
-    // można bez ifa bo w sumie wielomian i tak sprawdza czy jest współczynnikiem czy jednomianem
+    p = ParsePolyHelper(begin, end, err);
+    if (*err) {
+        return (Mono) {};
+    }
 
-    //if (*begin == '(') {
-        p = ParsePolyHelper(begin, end, err);
-        if (*err) {
-            return (Mono) {};
-        }
+    if (**end == '\0') {
+        *err = true;
+        PolyDestroy(&p);
+        return (Mono) {};
+    }
 
-        if (**end == '\0') {
-            *err = true;
-            PolyDestroy(&p);
-            return (Mono) {};
-        }
+    // teraz *end wskazuje na ','
+    int exp = ParseExp((*end) + 1, end, err);
 
-        // teraz *end wskazuje na ','
-        int exp = ParseExp((*end) + 1, end, err);
+    if (*err) {
+        PolyDestroy(&p);
+        return (Mono) {};
+    }
 
-        if (*err) {
-            PolyDestroy(&p);
-            return (Mono) {};
-        }
-
-        return MonoFromPoly(&p, exp);
-//    }
-//    else { // begin wskazuje na pierwszy digit (lub znak +-)
-//        //
-//    }
+    return MonoFromPoly(&p, exp);
 }
 
-// begin wskazuje na ( lub digit ze znakiem -> tylko współczynnik
-// end wskazuje na \0 lub ,
-Poly ParsePolyHelper(char *begin, char **end, bool *err) {
+/**
+ * Konwertuje wielomian. Poprawny wielomian zaczyna się znakiem '(', cyfrą lub
+ * znakiem '-'.
+ * Funkcja ustawia @end na pierwszy znak po
+ * skonwertowanym fragmencie (dla poprawnego wielomianu jest to '\0' lub ',').
+ * Funkcja ustawia @err na true jeżeli @begin nie wskazuje na '\0' lub gdy
+ * wielomian jest niepoprawny.
+ * @param[in] begin : początek wielomianu
+ * @param[out] end : wskaźnik na pierwszy znak po skonwertowanym fragmencie
+ * @param[out] err : flaga błędu
+ * @return wielomian
+ */
+static Poly ParsePolyHelper(char *begin, char **end, bool *err) {
     if (*begin == '\0') {
         *err = true;
         return (Poly) {};
     }
 
-    if (IsDigitOrSign(*begin)) { // parsowany wielomian jest współczynnikiem
+    if (IsDigitOrMinus(*begin)) { // parsowany wielomian jest współczynnikiem
         errno = 0;
         poly_coeff_t x = strtoll(begin, end, 10);
         if (errno == ERANGE || (**end != ',' && **end != '\0')) {
             *err = true;
         }
-        return PolyFromCoeff(x);
+        return PolyFromCoeff(x); // todo ogarnąć komentarze poniżej
     }
     else { // parsowany wielomian jest jednomianem lub sumą jednomianów
         MVector monos = MVectorNew();
@@ -246,7 +287,6 @@ Poly ParsePolyHelper(char *begin, char **end, bool *err) {
             begin = (*end) + 2;
         }
 
-
         Poly p = PolyAddMonos(monos.size, monos.items);
 
         MVectorFree(&monos);
@@ -255,9 +295,15 @@ Poly ParsePolyHelper(char *begin, char **end, bool *err) {
     }
 }
 
-// (((((2,3),4)+((7,8),9)),5),6)+(10,11)
-Line ParsePoly(const CVector *str, size_t lineNr) {
-    if (!IsCorrectString(str)) {
+/**
+ * Konwertuje wiersz na obiekt typu \ref Line reprezentujący wiersz zawierający
+ * wielomian.
+ * @param[in] str : wiersz
+ * @param[in] lineNr : numer linii
+ * @return skonwertowany wiersz
+ */
+static Line ParsePoly(const CVector *str, size_t lineNr) {
+    if (HasIllegalCharacters(str)) {
         fprintf(stderr, "ERROR %zu WRONG POLY\n", lineNr);
         return WrongLine();
     }

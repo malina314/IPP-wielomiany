@@ -219,7 +219,11 @@ bool PolyIsEq(const Poly *p, const Poly *q);
  */
 Poly PolyAt(const Poly *p, poly_coeff_t x);
 
-//todo dokumentacja
+/**
+ * Wpisuje wielomian zgodnie z przyjętą reprezentacją.
+ * @param[in] p : wielomian
+ * @param[in] newLine : czy wypisać po wielomianie znak nowej linii?
+ */
 void PolyPrint(const Poly *p, bool newLine);
 
 #endif /* __POLY_H__ */

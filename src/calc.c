@@ -12,6 +12,24 @@
 //todo MainPage.dox
 //todo zbić allocki
 
+
+
+
+
+//TODO
+// @file W NAGŁÓWKU PLIKU !!!!!!!!!!!
+//             ^
+//             |
+//             |
+//             |
+//             |
+//             |
+//             |
+//             |
+
+
+
+
 /**
  * Wykonuje polecenie lub wstawia wielomian na stos.
  * @param[in] line : wiersz z poleceniem lub wielomianem

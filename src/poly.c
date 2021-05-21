@@ -471,20 +471,16 @@ bool PolyIsEq(const Poly *p, const Poly *q) {
     return false;
 }
 
+/**
+ * Wpisuje jednomian zgodnie z przyjętą reprezentacją.
+ * @param[in] m : jednomian
+ */
 static void MonoPrint(const Mono *m) {
     printf("(");
     PolyPrint(&m->p, false);
     printf(",%d)", m->exp);
 }
 
-// Jednomian reprezentujemy jako parę (coeff,exp), gdzie współczynnik coeff jest
-// wielomianem, a wykładnik exp jest liczbą nieujemną.
-//0
-//-2
-//(-1,2)
-//(1,0)+(1,2)
-//(-7,8)+((1,2),15)
-//(3,1)+(((4,4),100),2)
 void PolyPrint(const Poly *p, bool newLine) {
     assert(PolyIsSorted(p));
 
