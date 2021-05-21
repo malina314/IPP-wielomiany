@@ -7,6 +7,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+//TODO static inline wszędzie
+
+//TODO dokumentacja
+
+//todo MainPage.dox
+
 //ZERO – wstawia na wierzchołek stosu wielomian tożsamościowo równy zeru;
 //IS_COEFF – sprawdza, czy wielomian na wierzchołku stosu jest współczynnikiem – wypisuje na standardowe wyjście 0 lub 1;
 //IS_ZERO – sprawdza, czy wielomian na wierzchołku stosu jest tożsamościowo równy zeru – wypisuje na standardowe wyjście 0 lub 1;
@@ -196,7 +202,11 @@ void Calc(const Line *line, Stack *stack, size_t lineNr) {
     }
 }
 
+//#define XXX
+
+#ifdef XXX
 void testy();
+#endif
 //0
 //1
 //(1,1)
@@ -204,10 +214,13 @@ void testy();
 //0
 //(1,1)+(2,2)+(3,3)
 //((1,2),3)
-//(((((2,3),4)+((7,8),9)),5),6)
-//(((((2,3),4)+((7,8),9)),5),6)+(10,11)
+//((((2,3),4)+((7,8),9),5),6)
+//((((2,3),4)+((7,8),9),5),6)+(10,11)
 
 int main() {
+
+//    void *x = malloc(240);
+//    printf("%p\n", x);
 
 //    testy();
 //    return 0;
@@ -230,11 +243,14 @@ int main() {
         CVector *input = ReadLine(&isReadEnd);
         if (input != NULL) {
             Line line = Parse(input, lineNr);
+
+            CVectorFree(input);
+            free(input);
+
             if (IsCorrectLine(&line)) {
                 Calc(&line, &stack, lineNr);
             }
-            //LineFree(&line);
-            CVectorFree(input);
+            LineFree(&line);
         }
         lineNr++;
     }
@@ -251,7 +267,7 @@ int main() {
 //==================================================================
 //==================================================================
 
-
+#ifdef XXX
 #include <stdarg.h>
 
 #define CHECK_PTR(p)        \
@@ -332,3 +348,4 @@ void testy() {
     PolyPrint(&p, true);
     PolyDestroy(&p);
 }
+#endif

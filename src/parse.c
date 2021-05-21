@@ -7,10 +7,16 @@
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
+#include <limits.h>
 
 static inline bool IsPrefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
+
+// todo coś tu nie działa
+//static inline bool IsEqual(const CVector *cv, const char *str) {
+//    return cv->size == strlen(str) + 1 && strcmp(cv->items, "ZERO") == 0;
+//}
 
 static inline bool IsLegalCaracter(char c) {
     return isupper(c) || isdigit(c) || c == '-' || c == '+' || c == '(' ||
@@ -27,7 +33,7 @@ static bool IsCorrectString(const CVector *str) {
 }
 
 static inline bool IsDigitOrSign(char c) {
-    return isdigit(c) || c == '-' || c == '+';
+    return isdigit(c) || c == '-';
 }
 
 static inline bool HasDegByAnArgument(const CVector *str) {
@@ -35,14 +41,15 @@ static inline bool HasDegByAnArgument(const CVector *str) {
 }
 
 static inline bool HasAtAnArgument(const CVector *str) {
-    return str->size >= 4 && str->items[2] == ' ' && isdigit(str->items[3]);
+    return str->size >= 4 && str->items[2] == ' ' &&
+        IsDigitOrSign(str->items[3]);
 }
 
 Line ParseCommand(const CVector *str, size_t lineNr) {
-    if (!IsCorrectString(str)) {
-        fprintf(stderr, "ERROR %zu COMMAND\n", lineNr);
-        return WrongLine();
-    }
+//    if (!IsCorrectString(str)) {
+//        fprintf(stderr, "ERROR %zu WRONG COMMAND\n", lineNr);
+//        return WrongLine();
+//    }
 
     if (strcmp(str->items, "ZERO") == 0) {
         return CommandLine(ZERO);
@@ -118,7 +125,7 @@ Line ParseCommand(const CVector *str, size_t lineNr) {
         }
     }
 
-    fprintf(stderr, "ERROR %zu COMMAND\n", lineNr);
+    fprintf(stderr, "ERROR %zu WRONG COMMAND\n", lineNr);
     return WrongLine();
 }
 
@@ -145,6 +152,11 @@ Poly ParsePolyHelper(char *begin, char **end, bool *err);
 // begin wskazuje na pierwszy digit (lub znak +-) lub nawias kolejnego poly
 // end po wyjściu wskazuje na )
 Mono ParseMono(char *begin, char **end, bool *err) {
+    if (*begin == '\0') {
+        *err = true;
+        return (Mono) {};
+    }
+
     Poly p;
 
     // można bez ifa bo w sumie wielomian i tak sprawdza czy jest współczynnikiem czy jednomianem
@@ -157,6 +169,7 @@ Mono ParseMono(char *begin, char **end, bool *err) {
 
         if (**end == '\0') {
             *err = true;
+            PolyDestroy(&p);
             return (Mono) {};
         }
 
@@ -164,6 +177,7 @@ Mono ParseMono(char *begin, char **end, bool *err) {
         int exp = ParseExp((*end) + 1, end, err);
 
         if (*err) {
+            PolyDestroy(&p);
             return (Mono) {};
         }
 
@@ -177,9 +191,14 @@ Mono ParseMono(char *begin, char **end, bool *err) {
 // begin wskazuje na ( lub digit ze znakiem -> tylko współczynnik
 // end wskazuje na \0 lub ,
 Poly ParsePolyHelper(char *begin, char **end, bool *err) {
+    if (*begin == '\0') {
+        *err = true;
+        return (Poly) {};
+    }
+
     if (IsDigitOrSign(*begin)) { // parsowany wielomian jest współczynnikiem
         errno = 0;
-        poly_coeff_t x = strtoull(begin, end, 10);
+        poly_coeff_t x = strtoll(begin, end, 10);
         if (errno == ERANGE || (**end != ',' && **end != '\0')) {
             *err = true;
         }
@@ -190,11 +209,12 @@ Poly ParsePolyHelper(char *begin, char **end, bool *err) {
 
         // niezmiennik: begin wskazuje na (
         while (true) {
-            MVectorPush(&monos, ParseMono(begin + 1, end, err));
+            Mono m = ParseMono(begin + 1, end, err);
             if (*err) {
                 MVectorDeepFree(&monos);
                 return (Poly) {};
             }
+            MVectorPush(&monos, m);
 
             // po wyjściu z ParseMono *end wskazuje na ) kończący jednomian
             // wielomian ma postać (..)\0 lub (..)+(..)+...+(..),
@@ -214,6 +234,7 @@ Poly ParsePolyHelper(char *begin, char **end, bool *err) {
             begin = (*end) + 2;
         }
 
+
         Poly p = PolyAddMonos(monos.size, monos.items);
 
         MVectorFree(&monos);
@@ -225,7 +246,7 @@ Poly ParsePolyHelper(char *begin, char **end, bool *err) {
 // (((((2,3),4)+((7,8),9)),5),6)+(10,11)
 Line ParsePoly(const CVector *str, size_t lineNr) {
     if (!IsCorrectString(str)) {
-        fprintf(stderr, "ERROR %zu POLY\n", lineNr);
+        fprintf(stderr, "ERROR %zu WRONG POLY\n", lineNr);
         return WrongLine();
     }
 
@@ -236,7 +257,8 @@ Line ParsePoly(const CVector *str, size_t lineNr) {
     *p = ParsePolyHelper(str->items, &end, &err);
 
     if (err || *end != '\0') {
-        fprintf(stderr, "ERROR %zu POLY\n", lineNr);
+        fprintf(stderr, "ERROR %zu WRONG POLY\n", lineNr);
+        free(p);
         return WrongLine();
     }
 

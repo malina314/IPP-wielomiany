@@ -105,7 +105,7 @@ static void PolyShrinkArray(Poly *p, size_t size) {
  * Usuwa z wielomianu jednomiany o zerowym współczynniku.
  * @param[in] p : wielomian
  */
-static void PolyNormalize(Poly *p) {
+static void PolyNormalize(Poly *p) { // todo czy jest sens żeby to zawsze schodziło w głąb?
     if (!PolyIsCoeff(p)) {
         size_t k = 0; // indeks tablicy newArr
         Mono *newArr = malloc(p->size * sizeof (Mono));
@@ -221,12 +221,20 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
     if (count == 0) {
         return PolyZero();
     }
+    if (count == 1) {
+        Poly p = PolyFormMono(monos[0]);
+        PolyNormalize(&p);
+        return p;
+    }
+
+//    size_t size = count * sizeof (Mono);
 
     Mono *monosArr = malloc(count * sizeof (Mono));
+//    Mono *monosArr = calloc(count, sizeof (Mono));
     CHECK_PTR(monosArr);
     memcpy(monosArr, monos, count * sizeof (Mono));
 
-    qsort(monosArr, count, sizeof(Mono), MonoCompare);
+    qsort(monosArr, count, sizeof (Mono), MonoCompare);
 
     Poly res = PolyCreate(count);
 
@@ -465,16 +473,8 @@ bool PolyIsEq(const Poly *p, const Poly *q) {
 
 static void MonoPrint(const Mono *m) {
     printf("(");
-    if (PolyIsCoeff(&m->p) || m->p.size == 1) {
-        PolyPrint(&m->p, false);
-    }
-    else {
-        printf("(");
-        PolyPrint(&m->p, false);
-        printf(")");
-    }
-    printf(",%d", m->exp);
-    printf(")");
+    PolyPrint(&m->p, false);
+    printf(",%d)", m->exp);
 }
 
 // Jednomian reprezentujemy jako parę (coeff,exp), gdzie współczynnik coeff jest

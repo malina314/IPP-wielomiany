@@ -73,7 +73,7 @@ void MVectorPush(MVector *self, Mono m) {
         if (self->items == NULL) {
             exit(1);
         }
-        self->allocated = INITIAL_CHAR_VECTOR_SIZE;
+        self->allocated = INITIAL_MONO_VECTOR_SIZE;
     } else if (self->size == self->allocated) {
         self->items = realloc(self->items, self->allocated * 2 * typeSize);
         if (self->items == NULL) {

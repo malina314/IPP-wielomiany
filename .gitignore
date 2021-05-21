@@ -9,3 +9,6 @@ src/poly_example.c
 src/poly_example2.c
 src/skrypt.sh
 examples
+proste_testy_do_wykrycia_memleakow/
+testy_z_gitlaba/
+test.sh

@@ -1,6 +1,7 @@
 #include "line.h"
 #include "poly.h"
 #include <stdbool.h>
+#include <stdlib.h>
 
 Line WrongLine() {
     return (Line) {.p = NULL, .is_poly = true};
@@ -24,6 +25,6 @@ Line PolyLine(Poly *p) {
 
 void LineFree(const Line *self) {
     if (self->is_poly && self->p != NULL) {
-        PolyDestroy(self->p);
+        free(self->p);
     }
 }
