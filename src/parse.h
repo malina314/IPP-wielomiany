@@ -1,3 +1,10 @@
+/** @file
+  Interfejs modułu odpowiedzialnego za konwertowanie wejścia.
+
+  @authors Mateusz Malinowski
+  @date 2021
+*/
+
 #ifndef POLYNOMIALS_PARSE_H
 #define POLYNOMIALS_PARSE_H
 

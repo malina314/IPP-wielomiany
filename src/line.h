@@ -1,3 +1,12 @@
+/** @file
+  Plik udostępnia typ wyliczeniowy reprezentujący polecenie oraz strukturę
+  przechowującą wiersz wraz z funkcjami umożliwiającymi podstawowe operacje na
+  tej strukturze.
+
+  @authors Mateusz Malinowski
+  @date 2021
+*/
+
 #ifndef POLYNOMIALS_LINE_H
 #define POLYNOMIALS_LINE_H
 

@@ -1,3 +1,10 @@
+/** @file
+  Implementacja funkcji umożliwiających podstawowe operacje na wierszu.
+
+  @authors Mateusz Malinowski
+  @date 2021
+*/
+
 #include "line.h"
 #include "poly.h"
 #include <stdbool.h>

@@ -1,3 +1,10 @@
+/** @file
+  Implementacja modułu odpowiedzialnego za konwertowanie wejścia.
+
+  @authors Mateusz Malinowski
+  @date 2021
+*/
+
 #include "line.h"
 #include "parse.h"
 #include "vector.h"

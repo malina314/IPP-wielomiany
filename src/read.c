@@ -1,31 +1,31 @@
-/**
- * Author:  Mateusz Malinowski
- * Date:    March 2021
- *
- * Summary of File:
- *
- *   This file implements reading lines from stdin operations.
- */
+/** @file
+  Implementacja modułu odpowiedzialnego za wczytywanie wejścia.
+
+  @authors Mateusz Malinowski
+  @date 2021
+*/
 
 #include "read.h"
 #include "vector.h"
-#include <stdio.h>
-#include <stdbool.h>
-#include <assert.h>
 
-// reads all chars to '\n' or EOF and discard them
+#include <assert.h>
+#include <stdbool.h>
+#include <stdio.h>
+
+/**
+ * Wczytuje znaki aż do napotkania '\n' lub EOF i porzuca je.
+ */
 static inline void SkipLine() {
     char c;
     while ((c = (char)getchar()) != EOF && c != '\n');
 }
 
-// reads line, checks if it is comment or contains illegal characters
-// sets read status
-// returns pointer to buffer in which are read characters
 /**
- * mamy wczytać linię, olać puste i z #
- * @param status
- * @return
+ * Wczytuje wiersz znak po znaku.
+ * Ustawia @isReadEnd na true, jeśli dotrze do EOF.
+ * @param[out] isReadEnd : flaga czy to koniec wejścia
+ * @return NULL gdy wiersz jest pusty lub zaczyna się znakiem '#', w przeciwnym
+ * razie wczytany wiersz
  */
 CVector *ReadLine(bool *isReadEnd) {
     assert(isReadEnd);

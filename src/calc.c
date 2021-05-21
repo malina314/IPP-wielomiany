@@ -1,3 +1,11 @@
+/** @file
+  Plik zawiera funkcję główną kalkulatora wykonującego działania na wielomianach
+  stosującego odwrotną notację polską.
+
+  @authors Mateusz Malinowski
+  @date 2021
+*/
+
 #include "line.h"
 #include "parse.h"
 #include "read.h"
