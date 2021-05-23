@@ -105,17 +105,13 @@ static void PolyShrinkArray(Poly *p, size_t size) {
  * Usuwa z wielomianu jednomiany o zerowym współczynniku.
  * @param[in] p : wielomian
  */
-static void PolyNormalize(Poly *p) { // todo czy jest sens żeby to zawsze schodziło w głąb?
+static void PolyNormalize(Poly *p) {
     if (!PolyIsCoeff(p)) {
         size_t k = 0; // indeks tablicy newArr
         Mono *newArr = malloc(p->size * sizeof (Mono));
         CHECK_PTR(newArr);
 
         for (size_t i = 0; i < p->size; ++i) {
-            if (!PolyIsCoeff(&p->arr[i].p)) {
-                PolyNormalize(&p->arr[i].p);
-            }
-
             if (!PolyIsZero(&p->arr[i].p)) {
                 newArr[k++] = p->arr[i];
             }
