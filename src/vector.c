@@ -8,7 +8,14 @@
 #include "vector.h"
 #include <stdlib.h>
 
+/**
+ * początkowy rozmiar wektora jednomianów
+ */
 const int INITIAL_MONO_VECTOR_SIZE = 8;
+
+/**
+ * początkowy rozmiar wektora znaków
+ */
 const int INITIAL_CHAR_VECTOR_SIZE = 32;
 
 CVector *CVectorNew() {

@@ -15,28 +15,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-//TODO static inline wszędzie
-//TODO dokumentacja
 //todo MainPage.dox
 //todo zbić allocki
-
-
-
-
-
-//TODO
-// @file W NAGŁÓWKU PLIKU !!!!!!!!!!!
-//             ^
-//             |
-//             |
-//             |
-//             |
-//             |
-//             |
-//             |
-
-
-
 
 /**
  * Wykonuje polecenie lub wstawia wielomian na stos.

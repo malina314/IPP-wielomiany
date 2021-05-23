@@ -16,18 +16,18 @@
  * To jest struktura wektora znaków.
  */
 typedef struct {
-    char *items;
-    size_t size;
-    size_t allocated;
+    char *items; ///< tablica przechowująca znaki
+    size_t size; ///< liczba elementów na wektorze
+    size_t allocated; ///< rozmiar tablicy items
 } CVector;
 
 /**
  * To jest struktura wektora jednomianów.
  */
 typedef struct {
-    Mono *items;
-    size_t size;
-    size_t allocated;
+    Mono *items; ///< tablica przechowująca jednomiany
+    size_t size; ///< liczba elementów na wektorze
+    size_t allocated; ///< rozmiar tablicy items
 } MVector;
 
 /**

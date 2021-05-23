@@ -25,14 +25,20 @@ typedef enum {
  * To jest struktura przechowująca wiersz zawierający polecenie lub wielomian.
  */
 typedef struct {
+    /**
+     * To jest unia przechowująca wielomian lub strukutrę złożoną z polecenia
+     * i argumentu. Jeżeli polecenie nie ma argumetu to pole `arg` nie jest
+     * używane. Jeżeli `is_poly == true` to znaczy, że unia przechowuje
+     * wielomian, w przeciwnym razie przechowuje polecenie.
+     */
     union {
-        Poly *p;
+        Poly *p; ///< wielomian
         struct {
-            Command c;
-            poly_coeff_t arg; // castowanie z signed na unsigbed jest ok
+            Command c; ///< polecenie
+            poly_coeff_t arg; ///< argument polecenia DEG_BY lub AT
         };
     };
-    bool is_poly;
+    bool is_poly; ///< flaga służąca do odróżniania które pole unii jest używane
 } Line;
 
 /**

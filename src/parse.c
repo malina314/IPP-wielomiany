@@ -28,7 +28,7 @@ static inline bool IsPrefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-// todo coś tu nie działa
+// todo ewentualnie poprawić lub usunąć
 //static inline bool IsEqual(const CVector *cv, const char *str) {
 //    return cv->size == strlen(str) + 1 && strcmp(cv->items, "ZERO") == 0;
 //}
@@ -227,10 +227,9 @@ static Mono ParseMono(char *begin, char **end, bool *err) {
         PolyDestroy(&p);
         return (Mono) {};
     }
-
     // teraz *end wskazuje na ','
-    int exp = ParseExp((*end) + 1, end, err);
 
+    int exp = ParseExp((*end) + 1, end, err);
     if (*err) {
         PolyDestroy(&p);
         return (Mono) {};
@@ -263,13 +262,18 @@ static Poly ParsePolyHelper(char *begin, char **end, bool *err) {
         if (errno == ERANGE || (**end != ',' && **end != '\0')) {
             *err = true;
         }
-        return PolyFromCoeff(x); // todo ogarnąć komentarze poniżej
+        return PolyFromCoeff(x);
     }
     else { // parsowany wielomian jest jednomianem lub sumą jednomianów
         MVector monos = MVectorNew();
 
-        // niezmiennik: begin wskazuje na (
         while (true) {
+            if (*begin != '(') {
+                *err = true;
+                MVectorDeepFree(&monos);
+                return (Poly) {};
+            }
+
             Mono m = ParseMono(begin + 1, end, err);
             if (*err) {
                 MVectorDeepFree(&monos);
@@ -277,22 +281,20 @@ static Poly ParsePolyHelper(char *begin, char **end, bool *err) {
             }
             MVectorPush(&monos, m);
 
-            // po wyjściu z ParseMono *end wskazuje na ) kończący jednomian
-            // wielomian ma postać (..)\0 lub (..)+(..)+...+(..),
-            // ale nigdy ((..)+(..)+...+(..))
+            // po wyjściu z ParseMono *end wskazuje na ')' kończący jednomian
+            (*end)++;
 
-            if (*(*end + 1) == '\0' || *(*end + 1) == ',') { // todo po testach wyciągnąć do osobnej funkcji
-                (*end)++;
+            if (**end == '\0' || **end == ',') { // poprawny koniec wielomianu
                 break;
             }
 
-            if (*(*end + 1) != '+' || *(*end + 2) != '(') {
+            if (**end != '+') { // niepoprawna suma jednomianów
                 *err = true;
                 MVectorDeepFree(&monos);
                 return (Poly) {};
             }
 
-            begin = (*end) + 2;
+            begin = (*end) + 1;
         }
 
         Poly p = PolyAddMonos(monos.size, monos.items);

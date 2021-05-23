@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-const int INITIAL_STACK_SIZE = 16;
+const int INITIAL_STACK_SIZE = 16; ///< początkowy rozmiar stosu
 
 Stack StackNew() {
     Stack obj = {NULL, 0, 0};

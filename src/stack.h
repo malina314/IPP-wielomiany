@@ -13,10 +13,13 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+/**
+ * To jest struktura stosu wielomianów.
+ */
 typedef struct {
-    Poly *items;
-    size_t size;
-    size_t allocated;
+    Poly *items; ///< tablica przechowująca wielomiany
+    size_t size; ///< liczba elementów na stosie
+    size_t allocated; ///< rozmiar tablicy items
 } Stack;
 
 /**
