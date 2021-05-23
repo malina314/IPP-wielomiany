@@ -4,13 +4,45 @@
 ### Treść zadania
 
 Uwaga: aktualna treść zadania znajduje się w [Moodle](https://moodle.mimuw.edu.pl).
-
-### Opis programu
-
 Tegoroczne duże zadanie polega na zaimplementowaniu operacji na wielomianach
 rzadkich wielu zmiennych.
+Jako drugą część zadania należy zaimplementować kalkulator działający na wielomianach
+i stosujący odwrotną notację polską.
 
-### Opis rozwiązania
+### Opis programu
+Kalkulator stosuje odwrotną notację polską oraz korzysta z biblioteki poly.h.
+Program kalkulatora czyta dane wierszami ze standardowego wejścia.
+Poprawny wiersz zawiera wielomian lub polecenie do wykonania.
+Wielomian reprezentujemy jako stałą, jednomian lub sumę jednomianów. Stała jest liczbą całkowitą.
+Jednomian reprezentujemy jako parę `(wielomian, wykładnik)`, wykładnik jest liczbą całkowitą nieujemną.
+Do wyrażenia sumy używamy znaku `+`. Jeśli wiersz zawiera wielomian, to program wstawia go na stos.
+
+Kalkulator wykonuje następujące polecenia:
+
+ZERO – wstawia na wierzchołek stosu wielomian tożsamościowo równy zeru;\n
+IS_COEFF – sprawdza, czy wielomian na wierzchołku stosu jest współczynnikiem
+– wypisuje na standardowe wyjście 0 lub 1;\n
+IS_ZERO – sprawdza, czy wielomian na wierzchołku stosu jest tożsamościowo równy zeru
+– wypisuje na standardowe wyjście 0 lub 1;\n
+CLONE – wstawia na stos kopię wielomianu z wierzchołka;\n
+ADD – dodaje dwa wielomiany z wierzchu stosu, usuwa je i wstawia na wierzchołek stosu ich sumę;\n
+MUL – mnoży dwa wielomiany z wierzchu stosu, usuwa je i wstawia na wierzchołek stosu ich iloczyn;\n
+NEG – neguje wielomian na wierzchołku stosu;\n
+SUB – odejmuje od wielomianu z wierzchołka wielomian pod wierzchołkiem, usuwa je i wstawia
+na wierzchołek stosu różnicę;\n
+IS_EQ – sprawdza, czy dwa wielomiany na wierzchu stosu są równe
+– wypisuje na standardowe wyjście 0 lub 1;\n
+DEG – wypisuje na standardowe wyjście stopień wielomianu
+(−1 dla wielomianu tożsamościowo równego zeru);\n
+DEG_BY idx – wypisuje na standardowe wyjście stopień wielomianu ze względu na zmienną
+o numerze idx (−1 dla wielomianu tożsamościowo równego zeru);\n
+AT x – wylicza wartość wielomianu w punkcie x, usuwa wielomian z wierzchołka i wstawia
+na stos wynik operacji;\n
+PRINT – wypisuje na standardowe wyjście wielomian z wierzchołka stosu, wielomian wypisywany
+jest w najprostszej postaci, zgodnie z założeniami implementacji biblioteki poly.h ;\n
+POP – usuwa wielomian z wierzchołka stosu.
+
+### Opis biblioteki poly
 Polynomials jest biblioteką umożliwiającą operacje na wielomianach rzadkich
 wielu zmiennych o współczynnikach całkowitych. Biblioteka usdotępnia struktury
 reprezentujące jednomian oraz wielomian, a także funkcje wykonujące podstawowe
@@ -20,6 +52,7 @@ Biblioteka napisana jest w języku C, w standardzie C11.
 Implementacja zakłada, że jednomiany składowe wielomianu są posortowane rosnąco
 po wykładniku. Wielomian nie zawiera jednomianów o zerowych współczynnikach.
 
+### Szczegóły kompilacji
 Program można skompilować w wersji release za pomocą sekwencji poleceń:
 \code{.sh}
     mkdir release
@@ -37,7 +70,7 @@ cmake -D CMAKE_BUILD_TYPE=Debug ..
 make
 make doc
 \endcode
-W wyniku kompilacji w odpowiednim katalogu powstaje plik wykonywalny poly
+W wyniku kompilacji w odpowiednim katalogu powstaje plik wykonywalny `poly`
 oraz dokumentacja.
 
 */
