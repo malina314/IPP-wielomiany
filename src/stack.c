@@ -10,6 +10,18 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+/**
+ * Sprawdza, czy udało się zaalokować pamięć. Jeśli nie, kończy działanie
+ * programu z kodem 1.
+ * @param[in] p : wskaźnik zwrócony przez funkcję alokującą pamięć
+ */
+#define CHECK_PTR(p)        \
+    do {                    \
+        if (p == NULL) {    \
+            exit(1);        \
+        }                   \
+    } while (0)
+
 const int INITIAL_STACK_SIZE = 16; ///< początkowy rozmiar stosu
 
 Stack StackNew() {
@@ -28,15 +40,11 @@ void StackPush(Stack *self, Poly p) {
     size_t typeSize = sizeof p;
     if (self->allocated == 0) {
         self->items = malloc(INITIAL_STACK_SIZE * typeSize);
-        if (self->items == NULL) {
-            exit(1);
-        }
+        CHECK_PTR(self->items);
         self->allocated = INITIAL_STACK_SIZE;
     } else if (self->size == self->allocated) {
         self->items = realloc(self->items, self->allocated * 2 * typeSize);
-        if (self->items == NULL) {
-            exit(1);
-        }
+        CHECK_PTR(self->items);
         self->allocated *= 2;
     }
 

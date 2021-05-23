@@ -227,10 +227,7 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
         return p;
     }
 
-//    size_t size = count * sizeof (Mono);
-
     Mono *monosArr = malloc(count * sizeof (Mono));
-//    Mono *monosArr = calloc(count, sizeof (Mono));
     CHECK_PTR(monosArr);
     memcpy(monosArr, monos, count * sizeof (Mono));
 

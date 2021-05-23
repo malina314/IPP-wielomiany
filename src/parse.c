@@ -19,6 +19,18 @@
 #include <string.h>
 
 /**
+ * Sprawdza, czy udało się zaalokować pamięć. Jeśli nie, kończy działanie
+ * programu z kodem 1.
+ * @param[in] p : wskaźnik zwrócony przez funkcję alokującą pamięć
+ */
+#define CHECK_PTR(p)        \
+    do {                    \
+        if (p == NULL) {    \
+            exit(1);        \
+        }                   \
+    } while (0)
+
+/**
  * Sprawdza czy @p pre jest prefiksem @p str.
  * @param[in] pre : łańcuch znaków
  * @param[in] str : łańcuch znaków
@@ -322,6 +334,7 @@ static Line ParsePoly(const CVector *str, size_t lineNr) {
     char *end;
 
     Poly *p = malloc(sizeof (Poly));
+    CHECK_PTR(p);
     *p = ParsePolyHelper(str->items, &end, &err);
 
     if (err || *end != '\0') {
