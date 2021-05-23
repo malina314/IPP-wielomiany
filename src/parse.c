@@ -339,6 +339,7 @@ static Line ParsePoly(const CVector *str, size_t lineNr) {
 
     if (err || *end != '\0') {
         fprintf(stderr, "ERROR %zu WRONG POLY\n", lineNr);
+        PolyDestroy(p);
         free(p);
         return WrongLine();
     }
