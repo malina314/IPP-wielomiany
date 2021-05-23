@@ -1,109 +1,83 @@
-/**
- * Author:  Mateusz Malinowski
- * Date:    March 2021
- *
- * Summary of File:
- *
- *   This header provides vector structure of following types:
- *    -char
- *    -unsigned long long
- *    -long long
- *    -double
- *    -string
- *    -unsigned long long vector
- *   and foreach following operations
- *    -new
- *    -push
- *    -free
- */
+/** @file
+  Plik udostępnia stukturę wektora znaków i wektora jednomianów oraz funkcje
+  umożliwiające podstawowe operacje na tych strukturach.
+
+  @authors Mateusz Malinowski
+  @date 2021
+*/
 
 #ifndef SIMILAR_LINES_VECTOR_H
 #define SIMILAR_LINES_VECTOR_H
 
 #include "poly.h"
-#include <stdlib.h>
+#include <stddef.h>
 
+/**
+ * To jest struktura wektora znaków.
+ */
 typedef struct {
     char *items;
     size_t size;
     size_t allocated;
 } CVector;
 
+/**
+ * To jest struktura wektora jednomianów.
+ */
 typedef struct {
     Mono *items;
     size_t size;
     size_t allocated;
 } MVector;
 
-
-
-
-//
-//typedef struct {
-//    unsigned long long *items;
-//    size_t size;
-//    size_t allocated;
-//} ULLVector;
-//
-//typedef struct {
-//    long long *items;
-//    size_t size;
-//    size_t allocated;
-//} LLVector;
-//
-//typedef struct {
-//    double *items;
-//    size_t size;
-//    size_t allocated;
-//} DVector;
-//
-//typedef struct {
-//    char **items;       // strings have to end with '\0'
-//    size_t size;
-//    size_t allocated;
-//} SVector;
-//
-//typedef struct {
-//    ULLVector *items;
-//    size_t size;
-//    size_t allocated;
-//} ULLVectorVector;
-
-
-
+/**
+ * Alokuje dynamicznie pusty wektor znaków i zwraca wskaźnik na niego.
+ * @return wskaźnik na utworzony wektor znaków
+ */
 CVector *CVectorNew();
+
+/**
+ * Zwalnia pamięć używaną przez wektor znaków.
+ * @param[in,out] self : wektor znaków
+ */
 void CVectorFree(CVector *self);
+
+/**
+ * Dodaje znak na koniec wektora.
+ * @param[in,out] self : wektor znaków
+ * @param[in] c : znak
+ */
 void CVectorPush(CVector *self, char c);
+
+/**
+ * Usuwa ostatni element wektora.
+ * @param[in,out] self : wektor znaków
+ */
 void CVectorPop(CVector *self);
 
+/**
+ * Tworzy pusty wektor jednomianów i go zwraca.
+ * @return wektor jednomianów
+ */
 MVector MVectorNew();
+
+/**
+ * Zwalnia pamięć używaną przez wektor jednomianów.
+ * @param[in,out] self : wektor jednomianów
+ */
 void MVectorFree(MVector *self);
+
+/**
+ * Zwalnia pamięć używaną przez wektor jednomianów oraz niszczy te jednomiany.
+ * @param[in,out] self : wektor jednomianów
+ */
 void MVectorDeepFree(MVector *self);
+
+/**
+ * Dodaje jednomian na koniec wektora.
+ * @param[in,out] self : wektor jednomianów
+ * @param[in] m : jednomian
+ */
 void MVectorPush(MVector *self, Mono m);
-
-
-
-
-//
-//
-//ULLVector ULLVectorNew();
-//void ULLVectorFree(ULLVector *self);
-//void ULLVectorPush(ULLVector *self, unsigned long long x);
-//
-//LLVector LLVectorNew();
-//void LLVectorFree(LLVector *self);
-//void LLVectorPush(LLVector *self, long long x);
-//
-//DVector DVectorNew();
-//void DVectorFree(DVector *self);
-//void DVectorPush(DVector *self, double x);
-//
-//SVector SVectorNew();
-//void SVectorFree(SVector *self);
-//void SVectorPush(SVector *self, char *str);
-//
-//ULLVectorVector ULLVectorVectorNew();
-//void ULLVectorVectorFree(ULLVectorVector *self);
-//void ULLVectorVectorPush(ULLVectorVector *self, ULLVector v);
 
 #endif //SIMILAR_LINES_VECTOR_H

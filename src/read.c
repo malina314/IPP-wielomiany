@@ -20,13 +20,6 @@ static inline void SkipLine() {
     while ((c = (char)getchar()) != EOF && c != '\n');
 }
 
-/**
- * Wczytuje wiersz znak po znaku.
- * Ustawia @isReadEnd na true, jeśli dotrze do EOF.
- * @param[out] isReadEnd : flaga czy to koniec wejścia
- * @return NULL gdy wiersz jest pusty lub zaczyna się znakiem '#', w przeciwnym
- * razie wczytany wiersz
- */
 CVector *ReadLine(bool *isReadEnd) {
     assert(isReadEnd);
 

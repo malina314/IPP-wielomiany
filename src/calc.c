@@ -234,7 +234,6 @@ int main() {
             Line line = Parse(input, lineNr);
 
             CVectorFree(input);
-            free(input);
 
             if (IsCorrectLine(&line)) {
                 Calc(&line, &stack, lineNr);

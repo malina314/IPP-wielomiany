@@ -1,4 +1,14 @@
+/** @file
+  Implementacja funkcji umożliwiających podstawowe operacje na wektorach.
+
+  @authors Mateusz Malinowski
+  @date 2021
+*/
+
 #include "stack.h"
+#include "poly.h"
+#include <stdbool.h>
+#include <stdlib.h>
 
 const int INITIAL_STACK_SIZE = 16;
 

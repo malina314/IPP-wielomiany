@@ -51,7 +51,7 @@ bool IsCorrectLine(const Line *line);
 
 /**
  * Tworzy obiekt typu \ref Line reprezentujący wiersz zawierający polecenie
- * @command.
+ * @p command.
  * @param[in] command : polecenie
  * @return wiersz zawierający polecenie
  */
@@ -59,7 +59,7 @@ Line CommandLine(Command command);
 
 /**
  * Tworzy obiekt typu \ref Line reprezentujący wiersz zawierający polecenie
- * @command z argumentem @arg.
+ * @p command z argumentem @p arg.
  * @param[in] command : polecenie
  * @param[in] arg : argument
  * @return wiersz zawierający polecenie z argumentem
@@ -67,7 +67,7 @@ Line CommandLine(Command command);
 Line CommandLineWithArg(Command command, poly_coeff_t arg);
 
 /**
- * Tworzy obiekt typu \ref Line reprezentujący wiersz zawierający wielomian @p.
+ * Tworzy obiekt typu \ref Line reprezentujący wiersz zawierający wielomian @p p.
  * @param[in] p : wielomian
  * @return wiersz zawierający wielomian
  */

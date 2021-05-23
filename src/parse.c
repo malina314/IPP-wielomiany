@@ -5,8 +5,8 @@
   @date 2021
 */
 
-#include "line.h"
 #include "parse.h"
+#include "line.h"
 #include "vector.h"
 
 #include <assert.h>
@@ -14,14 +14,15 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 /**
- * Sprawdza czy @pre jest prefiksem @str.
+ * Sprawdza czy @p pre jest prefiksem @p str.
  * @param[in] pre : łańcuch znaków
  * @param[in] str : łańcuch znaków
- * @return Czy @pre jest prefiksem @str?
+ * @return Czy @p pre jest prefiksem @p str?
  */
 static inline bool IsPrefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
@@ -33,9 +34,9 @@ static inline bool IsPrefix(const char *pre, const char *str) {
 //}
 
 /**
- * Sprawdza czy @c jest dozwolonym znakiem w wielomianie.
+ * Sprawdza czy @p c jest dozwolonym znakiem w wielomianie.
  * @param[in] c : znak
- * @return Czy @c jest dozwolonym znakiem w wielomianie?
+ * @return Czy @p c jest dozwolonym znakiem w wielomianie?
  */
 static inline bool IsLegalCaracter(char c) {
     return isdigit(c) || c == '-' || c == '+' || c == '(' || c == ')' ||
@@ -57,9 +58,9 @@ static bool HasIllegalCharacters(const CVector *str) {
 }
 
 /**
- * Sprawdza czy @c jest cyfrą lub znakiem '-'.
+ * Sprawdza czy @p c jest cyfrą lub znakiem '-'.
  * @param[in] c : znak
- * @return Czy @c jest cyfrą lub znakiem '-'?
+ * @return Czy @p c jest cyfrą lub znakiem '-'?
  */
 static inline bool IsDigitOrMinus(char c) {
     return isdigit(c) || c == '-';
@@ -170,9 +171,9 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
 }
 
 /**
- * Konwertuje wykładnik jednomianu. Funkcja ustawia @end na pierwszy znak po
+ * Konwertuje wykładnik jednomianu. Funkcja ustawia @p end na pierwszy znak po
  * skonwertowanym fragmencie (dla poprawnego jednomianu jest to ')').
- * Funkcja ustawia @err na true jeżeli @begin nie wskazuje na cyfrę lub gdy
+ * Funkcja ustawia @p err na true jeżeli @p begin nie wskazuje na cyfrę lub gdy
  * wykładnik wykracza poza zakres lub gdy po wykładniku nie stoi znak ')'.
  * @param[in] begin : początek wykładnika
  * @param[out] end : wskaźnik na pierwszy znak po skonwertowanym fragmencie
@@ -199,9 +200,9 @@ static int ParseExp(char *begin, char **end, bool *err) {
 static Poly ParsePolyHelper(char *begin, char **end, bool *err);
 
 /**
- * Konwertuje jednomian. Funkcja ustawia @end na pierwszy znak po
+ * Konwertuje jednomian. Funkcja ustawia @p end na pierwszy znak po
  * skonwertowanym fragmencie (dla poprawnego jednomianu jest to ')').
- * Funkcja ustawia @err na true jeżeli @begin nie wskazuje na '\0' lub gdy
+ * Funkcja ustawia @p err na true jeżeli @p begin nie wskazuje na '\0' lub gdy
  * jednomian jest niepoprawny.
  * @param[in] begin : początek jednomianu (pierwszy znak po '(')
  * @param[out] end : wskaźnik na pierwszy znak po skonwertowanym fragmencie
@@ -241,9 +242,9 @@ static Mono ParseMono(char *begin, char **end, bool *err) {
 /**
  * Konwertuje wielomian. Poprawny wielomian zaczyna się znakiem '(', cyfrą lub
  * znakiem '-'.
- * Funkcja ustawia @end na pierwszy znak po
+ * Funkcja ustawia @p end na pierwszy znak po
  * skonwertowanym fragmencie (dla poprawnego wielomianu jest to '\0' lub ',').
- * Funkcja ustawia @err na true jeżeli @begin nie wskazuje na '\0' lub gdy
+ * Funkcja ustawia @p err na true jeżeli @p begin nie wskazuje na '\0' lub gdy
  * wielomian jest niepoprawny.
  * @param[in] begin : początek wielomianu
  * @param[out] end : wskaźnik na pierwszy znak po skonwertowanym fragmencie
