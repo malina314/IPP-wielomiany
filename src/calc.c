@@ -205,15 +205,16 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
  */
 int main() {
     Stack stack = StackNew();
+    CVector *input = CVectorNew();
     size_t lineNr = 1;
     bool isReadEnd = false;
 
     while (!isReadEnd) {
-        CVector *input = ReadLine(&isReadEnd);
-        if (input != NULL) {
+        isReadEnd = ReadLine(input);
+        if (!CVectorEmpty(input)) {
             Line line = Parse(input, lineNr);
 
-            CVectorFree(input);
+            CVectorClear(input);
 
             if (IsCorrectLine(&line)) {
                 Calc(&line, &stack, lineNr);
@@ -224,6 +225,7 @@ int main() {
     }
 
     StackFree(&stack);
+    CVectorFree(input);
 
     return 0;
 }

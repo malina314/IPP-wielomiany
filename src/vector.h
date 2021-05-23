@@ -10,6 +10,7 @@
 #define SIMILAR_LINES_VECTOR_H
 
 #include "poly.h"
+#include <stdbool.h>
 #include <stddef.h>
 
 /**
@@ -54,6 +55,19 @@ void CVectorPush(CVector *self, char c);
  * @param[in,out] self : wektor znaków
  */
 void CVectorPop(CVector *self);
+
+/**
+ * Zeruje rozmiar wektora, ale nie zwalnia pamięci.
+ * @param[in,out] self : wektor znaków
+ */
+void CVectorClear(CVector *self);
+
+/**
+ * Sprawdza, czy wektor jest pusty.
+ * @param[in,out] self : wektor znaków
+ * @return Czy wektor jest pusty?
+ */
+bool CVectorEmpty(CVector *self);
 
 /**
  * Tworzy pusty wektor jednomianów i go zwraca.

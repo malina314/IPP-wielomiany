@@ -20,28 +20,25 @@ static inline void SkipLine() {
     while ((c = (char)getchar()) != EOF && c != '\n');
 }
 
-CVector *ReadLine(bool *isReadEnd) {
-    assert(isReadEnd);
+bool ReadLine(CVector *input) {
+    assert(input && CVectorEmpty(input));
 
     char c = (char)getchar();
 
     if (feof(stdin)) {
-        *isReadEnd = true;
-        return NULL;
+        return true;
     }
 
     if (c == '#') {
         SkipLine();
-        return NULL;
+        return false;
     }
 
     if (c == '\n') {
-        return NULL;
+        return false;
     }
 
-    CVector *input = CVectorNew();
-
-     do {
+    do {
          CVectorPush(input, c);
     } while (c != '\n' && (c = (char)getchar()) != EOF);
 
@@ -51,5 +48,5 @@ CVector *ReadLine(bool *isReadEnd) {
 
     CVectorPush(input, '\0');
 
-    return input;
+    return false;
 }

@@ -6,6 +6,7 @@
 */
 
 #include "vector.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 /**
@@ -28,7 +29,7 @@ const int INITIAL_MONO_VECTOR_SIZE = 8;
 /**
  * początkowy rozmiar wektora znaków
  */
-const int INITIAL_CHAR_VECTOR_SIZE = 32;
+const int INITIAL_CHAR_VECTOR_SIZE = 64;
 
 CVector *CVectorNew() {
     CVector *obj = calloc(1, sizeof (CVector));
@@ -58,6 +59,14 @@ void CVectorPush(CVector *self, char c) {
 
 void CVectorPop(CVector *self) {
     self->size--;
+}
+
+void CVectorClear(CVector *self) {
+    self->size = 0;
+}
+
+bool CVectorEmpty(CVector *self) {
+    return self->size == 0;
 }
 
 MVector MVectorNew() {
