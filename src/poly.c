@@ -59,6 +59,21 @@ Poly PolyClone(const Poly *p) {
 }
 
 /**
+ * Sprawdza, czy tablica jednomianów jest posortowana rosnąco po wykładnikach.
+ * @param[in] size : rozmiar tablicy
+ * @param[in] arr : tablica jednomianów
+ * @return Czy tablica jednomianów jest posortowana?
+ */
+static bool MonoIsArraySorted(size_t size, const Mono *arr) {
+    for (size_t i = 1; i < size; ++i) {
+        if (arr[i - 1].exp >= arr[i].exp) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
  * Sprawdza, czy jednomiany wielomianu są posortowane rosnąco po wykładniku.
  * Funkcja służy wyłącznie do sprawdzania asercji w kilku funkcjach, których
  * działanie opiera się na założeniu, że wielomiany są posortowane.
@@ -68,11 +83,7 @@ Poly PolyClone(const Poly *p) {
 #ifndef NDEBUG
 static bool PolyIsSorted(const Poly *p) {
     if (!PolyIsCoeff(p)) {
-        for (size_t i = 1; i < p->size; ++i) {
-            if (p->arr[i - 1].exp >= p->arr[i].exp) {
-                return false;
-            }
-        }
+        MonoIsArraySorted(p->size, p->arr);
     }
     return true;
 }
@@ -227,7 +238,9 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
     CHECK_PTR(monosArr);
     memcpy(monosArr, monos, count * sizeof (Mono));
 
-    qsort(monosArr, count, sizeof (Mono), MonoCompare);
+    if (!MonoIsArraySorted(count, monosArr)) {
+        qsort(monosArr, count, sizeof (Mono), MonoCompare);
+    }
 
     Poly res = PolyCreate(count);
 
