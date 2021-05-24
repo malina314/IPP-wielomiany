@@ -79,6 +79,27 @@ static inline bool IsDigitOrMinus(char c) {
 }
 
 /**
+ * Sprawdza, czy wyrażenie jest porawnie nawiasowane.
+ * @param s : wyrażenie
+ * @return Czy wyrażenie jest porawnie nawiasowane?
+ */
+static bool AreParenthesesValid(const char *s) {
+    int ctr = 0;
+
+    while (*s && ctr >= 0) {
+        if (*s == '(') {
+            ctr++;
+        }
+        else if (*s == ')') {
+            ctr--;
+        }
+        s++;
+    }
+
+    return ctr == 0;
+}
+
+/**
  * Sprawdza czy polecenie DEG_BY zawiera argument.
  * @param[in] str : wiersz
  * @return Czy polecenie DEG_BY zawiera argument?
@@ -325,7 +346,7 @@ static Poly ParsePolyHelper(char *begin, char **end, bool *err) {
  * @return skonwertowany wiersz
  */
 static Line ParsePoly(const CVector *str, size_t lineNr) {
-    if (HasIllegalCharacters(str)) {
+    if (HasIllegalCharacters(str) || !AreParenthesesValid(str->items)) {
         fprintf(stderr, "ERROR %zu WRONG POLY\n", lineNr);
         return WrongLine();
     }

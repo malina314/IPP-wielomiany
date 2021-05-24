@@ -29,7 +29,7 @@ const int INITIAL_MONO_VECTOR_SIZE = 8;
 /**
  * początkowy rozmiar wektora znaków
  */
-const int INITIAL_CHAR_VECTOR_SIZE = 64;
+const int INITIAL_CHAR_VECTOR_SIZE = 256;
 
 CVector *CVectorNew() {
     CVector *obj = calloc(1, sizeof (CVector));
