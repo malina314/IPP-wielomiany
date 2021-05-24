@@ -40,10 +40,16 @@ static inline bool IsPrefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-// todo ewentualnie poprawić lub usunąć
-//static inline bool IsEqual(const CVector *cv, const char *str) {
-//    return cv->size == strlen(str) + 1 && strcmp(cv->items, "ZERO") == 0;
-//}
+/**
+ * Sprawdza czy ciąg znaków przechowywany na wektorze @param cv jest równy ze
+ * @param str
+ * @param cv : wektor znaków zakończony '\0'
+ * @param str : łańcuch znaków
+ * @return Czy są równe?
+ */
+static inline bool IsEqual(const CVector *cv, const char *str) {
+    return cv->size == strlen(str) + 1 && strcmp(cv->items, str) == 0;
+}
 
 /**
  * Sprawdza czy @p c jest dozwolonym znakiem w wielomianie.
@@ -126,40 +132,40 @@ static inline bool HasAtAnArgument(const CVector *str) {
  * @return skonwertowany wiersz
  */
 static Line ParseCommand(const CVector *str, size_t lineNr) {
-    if (strcmp(str->items, "ZERO") == 0) {
+    if (IsEqual(str, "ZERO")) {
         return CommandLine(ZERO);
     }
-    if (strcmp(str->items, "IS_COEFF") == 0) {
+    if (IsEqual(str, "IS_COEFF")) {
         return CommandLine(IS_COEFF);
     }
-    if (strcmp(str->items, "IS_ZERO") == 0) {
+    if (IsEqual(str, "IS_ZERO")) {
         return CommandLine(IS_ZERO);
     }
-    if (strcmp(str->items, "CLONE") == 0) {
+    if (IsEqual(str, "CLONE")) {
         return CommandLine(CLONE);
     }
-    if (strcmp(str->items, "ADD") == 0) {
+    if (IsEqual(str, "ADD")) {
         return CommandLine(ADD);
     }
-    if (strcmp(str->items, "MUL") == 0) {
+    if (IsEqual(str, "MUL")) {
         return CommandLine(MUL);
     }
-    if (strcmp(str->items, "NEG") == 0) {
+    if (IsEqual(str, "NEG")) {
         return CommandLine(NEG);
     }
-    if (strcmp(str->items, "SUB") == 0) {
+    if (IsEqual(str, "SUB")) {
         return CommandLine(SUB);
     }
-    if (strcmp(str->items, "IS_EQ") == 0) {
+    if (IsEqual(str, "IS_EQ")) {
         return CommandLine(IS_EQ);
     }
-    if (strcmp(str->items, "DEG") == 0) {
+    if (IsEqual(str, "DEG")) {
         return CommandLine(DEG);
     }
-    if (strcmp(str->items, "PRINT") == 0) {
+    if (IsEqual(str, "PRINT")) {
         return CommandLine(PRINT);
     }
-    if (strcmp(str->items, "POP") == 0) {
+    if (IsEqual(str, "POP")) {
         return CommandLine(POP);
     }
     if (IsPrefix("DEG_BY", str->items)) {
