@@ -250,7 +250,6 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
             return PolyZero();
         }
         Poly p = PolyFormMono(monos[0]);
-        // todo to trzeba zoptymalizować ale nie można wywalić bo wtedy nie działa
         PolyNormalize(&p);
         return p;
     }

@@ -15,9 +15,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-//todo poprawić IsEq w parse.c
-//todo CRLF
-
 /**
  * Wykonuje polecenie lub wstawia wielomian na stos.
  * @param[in] line : wiersz z poleceniem lub wielomianem
