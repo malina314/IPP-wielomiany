@@ -41,6 +41,20 @@ static inline bool IsPrefix(const char *pre, const char *str) {
 }
 
 /**
+ * Sprawdza czy @p cv zawiera poprawne polecenie DEG_BY lub AT, tzn. czy @p str
+ * jest prefiksem @p cv oraz czy następny znak @p cv jest znakiem białym lub
+ * '\0'.
+ * @param[in] cv : wektor znaków
+ * @param[in] str : łańcuch znaków
+ * @return Czy polecenie jest poprawne?
+ */
+static inline bool IsCorrectCommand(const CVector *cv, const char *str) {
+    size_t len = strlen(str);
+    return IsPrefix(str, cv->items) &&
+        ((cv->size > len && isspace(cv->items[len])) || cv->items[len] == '\0');
+}
+
+/**
  * Sprawdza, wektor znaków @p cv jest równy z łańcuchem @p str.
  * @param[in] cv : wektor znaków zakończony '\0'
  * @param[in] str : łańcuch znaków
@@ -167,7 +181,7 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
     if (IsEqual(str, "POP")) {
         return CommandLine(POP);
     }
-    if (IsPrefix("DEG_BY", str->items)) {
+    if (IsCorrectCommand(str, "DEG_BY")) {
         if (HasDegByAnArgument(str)) {
             char *end;
             errno = 0;
@@ -185,7 +199,7 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
             return WrongLine();
         }
     }
-    if (IsPrefix("AT", str->items)) {
+    if (IsCorrectCommand(str, "AT")) {
         if (HasAtAnArgument(str)) {
             char *end;
             errno = 0;
