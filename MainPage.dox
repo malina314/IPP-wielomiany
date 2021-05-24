@@ -10,12 +10,13 @@ Jako drugą część zadania należy zaimplementować kalkulator działający na
 i stosujący odwrotną notację polską.
 
 ### Opis programu
-Kalkulator stosuje odwrotną notację polską oraz korzysta z biblioteki poly.h.
-Program kalkulatora czyta dane wierszami ze standardowego wejścia.
+Kalkulator wielomianów stosuje odwrotną notację polską oraz korzysta z biblioteki poly.h.
+Program kalkulatora czyta dane ze standardowego wejścia, wiersz po wierszu.
 Poprawny wiersz zawiera wielomian lub polecenie do wykonania.
 Wielomian reprezentujemy jako stałą, jednomian lub sumę jednomianów. Stała jest liczbą całkowitą.
 Jednomian reprezentujemy jako parę `(wielomian, wykładnik)`, wykładnik jest liczbą całkowitą nieujemną.
-Do wyrażenia sumy używamy znaku `+`. Jeśli wiersz zawiera wielomian, to program wstawia go na stos.
+Do wyrażenia sumy używamy znaku `+`. Jeśli wiersz zawiera wielomian, to program wstawia go na stos,
+a jeśli zawiera polecenie, to je wykonuje.
 
 Kalkulator wykonuje następujące polecenia:
 

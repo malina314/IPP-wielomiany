@@ -41,10 +41,9 @@ static inline bool IsPrefix(const char *pre, const char *str) {
 }
 
 /**
- * Sprawdza czy ciąg znaków przechowywany na wektorze @param cv jest równy ze
- * @param str
- * @param cv : wektor znaków zakończony '\0'
- * @param str : łańcuch znaków
+ * Sprawdza, wektor znaków @p cv jest równy z łańcuchem @p str.
+ * @param[in] cv : wektor znaków zakończony '\0'
+ * @param[in] str : łańcuch znaków
  * @return Czy są równe?
  */
 static inline bool IsEqual(const CVector *cv, const char *str) {

@@ -226,8 +226,8 @@ Poly PolyAdd(const Poly *p, const Poly *q) {
 
 /**
  * Porównuje dwa jednomiany po wykładniku.
- * @param a : wielomian @f$a@f$
- * @param b : wielomian @f$b@f$
+ * @param[in] a : wielomian @f$a@f$
+ * @param[in] b : wielomian @f$b@f$
  * @return @f$1@f$ jeśli @f$a@f$ jest większy niż @f$b@f$,
  * @f$0@f$ jeśli są równe,
  * @f$-1@f$ jeśli @f$b@f$ jest większy niż @f$a@f$
@@ -429,8 +429,8 @@ poly_exp_t PolyDeg(const Poly *p) {
 
 /**
  * Oblicza @p n-tą potęgę liczby @p x
- * @param x : podstawa
- * @param n : wykładnik
+ * @param[in] x : podstawa
+ * @param[in] n : wykładnik
  * @return @f$x^n@f$
  */
 poly_coeff_t FastPow(poly_coeff_t x, poly_exp_t n) {
