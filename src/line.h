@@ -22,23 +22,29 @@ typedef enum {
 } Command;
 
 /**
+ * To jest typ wyliczeniowy służący do określania statusu wiersza.
+ */
+typedef enum {
+    POLY, COMMAND, ERROR
+} LineStatus;
+
+/**
  * To jest struktura przechowująca wiersz zawierający polecenie lub wielomian.
  */
 typedef struct {
     /**
      * To jest unia przechowująca wielomian lub strukutrę złożoną z polecenia
      * i argumentu. Jeżeli polecenie nie ma argumetu to pole `arg` nie jest
-     * używane. Jeżeli `is_poly == true` to znaczy, że unia przechowuje
-     * wielomian, w przeciwnym razie przechowuje polecenie.
+     * używane.
      */
     union {
-        Poly *p; ///< wielomian
+        Poly p; ///< wielomian
         struct {
             Command c; ///< polecenie
             poly_coeff_t arg; ///< argument polecenia DEG_BY lub AT
         };
     };
-    bool is_poly; ///< flaga służąca do odróżniania które pole unii jest używane
+    LineStatus status; ///< status wiersza
 } Line;
 
 /**
@@ -77,12 +83,6 @@ Line CommandLineWithArg(Command command, poly_coeff_t arg);
  * @param[in] p : wielomian
  * @return wiersz zawierający wielomian
  */
-Line PolyLine(Poly *p);
-
-/**
- * Destruktor.
- * @param[in,out] self : wiersz
- */
-void LineFree(const Line *self);
+Line PolyLine(Poly p);
 
 #endif //POLYNOMIALS_LINE_H

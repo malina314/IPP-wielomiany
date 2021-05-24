@@ -15,7 +15,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-//todo zbić allocki
 //todo poprawić IsEq w parse.c
 //todo CRLF
 
@@ -26,8 +25,8 @@
  * @param[in] lineNr : numer wiersza
  */
 static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
-    if (line->is_poly) {
-        StackPush(stack, *line->p);
+    if (line->status == POLY) {
+        StackPush(stack, line->p);
     }
     else {
         switch (line->c) {
@@ -220,7 +219,6 @@ int main() {
             if (IsCorrectLine(&line)) {
                 Calc(&line, &stack, lineNr);
             }
-            LineFree(&line);
         }
         lineNr++;
     }
