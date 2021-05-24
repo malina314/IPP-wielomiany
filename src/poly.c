@@ -118,35 +118,52 @@ static void PolyShrinkArray(Poly *p, size_t size) {
  */
 static void PolyNormalize(Poly *p) {
     if (!PolyIsCoeff(p)) {
+        if (p->size == 1 && p->arr[0].exp == 0 && PolyIsCoeff(&p->arr[0].p)) {
+            // wielomian p ma tylko 1 jednomian stopnia 0, którego wielomian
+            // jest współczynnikiem, zatem wielomian p jest współczynnikiem
+            Poly tmp = p->arr[0].p;
+            free(p->arr);
+            *p = tmp;
+            return;
+        }
+
+        size_t nonZeroCtr = 0;
+
+        for (size_t i = 0; i < p->size; ++i) {
+            if (!PolyIsZero(&p->arr[i].p)) {
+                nonZeroCtr++;
+            }
+        }
+
+        if (nonZeroCtr == p->size) {
+            return;
+        }
+
+        if (nonZeroCtr == 0) {
+            free(p->arr);
+            *p = PolyZero();
+            return;
+        }
+
         size_t k = 0; // indeks tablicy newArr
-        Mono *newArr = malloc(p->size * sizeof (Mono));
+        Mono *newArr = malloc(nonZeroCtr * sizeof (Mono));
         CHECK_PTR(newArr);
 
         for (size_t i = 0; i < p->size; ++i) {
             if (!PolyIsZero(&p->arr[i].p)) {
                 newArr[k++] = p->arr[i];
             }
-            else {
-                MonoDestroy(&p->arr[i]);
-            }
         }
 
         free(p->arr);
         p->arr = newArr;
+        p->size = nonZeroCtr;
 
-        if (k == 0) {
-            // tablica jednomianów jest pusta, czyli mamy wielomian zerowy
-            *p = PolyZero();
-            free(newArr);
-        }
-        else if (k == 1 && p->arr[0].exp == 0 && PolyIsCoeff(&p->arr[0].p)) {
+        if (k == 1 && p->arr[0].exp == 0 && PolyIsCoeff(&p->arr[0].p)) {
             // wielomian p ma tylko 1 jednomian stopnia 0, którego wielomian
             // jest współczynnikiem, zatem wielomian p jest współczynnikiem
             *p = p->arr[0].p;
             free(newArr);
-        }
-        else if (k < p->size) {
-            PolyShrinkArray(p, k);
         }
     }
 }
