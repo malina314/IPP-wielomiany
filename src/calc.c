@@ -15,8 +15,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-//todo MainPage.dox
 //todo zbić allocki
+//todo poprawić IsEq w parse.c
+//todo CRLF
 
 /**
  * Wykonuje polecenie lub wstawia wielomian na stos.

@@ -145,7 +145,7 @@ static void PolyNormalize(Poly *p) {
             *p = p->arr[0].p;
             free(newArr);
         }
-        else {
+        else if (k < p->size) {
             PolyShrinkArray(p, k);
         }
     }
@@ -229,7 +229,11 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
         return PolyZero();
     }
     if (count == 1) {
+        if (PolyIsZero(&monos[0].p)) {
+            return PolyZero();
+        }
         Poly p = PolyFormMono(monos[0]);
+        // todo to trzeba zoptymalizować ale nie można wywalić bo wtedy nie działa
         PolyNormalize(&p);
         return p;
     }
