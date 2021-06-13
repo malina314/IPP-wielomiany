@@ -67,4 +67,11 @@ Poly StackTop(const Stack *self);
  */
 bool StackEmpty(const Stack *self);
 
+/**
+ * Zwraca rozmiar stosu.
+ * @param[in] self : stos
+ * @return rozmiar stosu
+ */
+size_t StackSize(const Stack *self);
+
 #endif //POLYNOMIALS_STACK_H

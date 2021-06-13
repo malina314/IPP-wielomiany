@@ -559,12 +559,15 @@ Poly PolyPow(const Poly *p, poly_exp_t n) {
     if (PolyIsCoeff(p)) {
         return PolyFromCoeff(FastPow(p->coeff, n));
     }
+    else if (n == 0) {
+        return PolyFromCoeff(1);
+    }
     else if (n == 1) {
         return PolyClone(p);
     }
     else {
         Poly res = *p;
-        for (size_t i = 0; i < (size_t)(n - 1); ++i) {
+        for (size_t i = 1; i < (size_t)n; ++i) {
             res = PolyMul(&res, p);
         }
         return res;

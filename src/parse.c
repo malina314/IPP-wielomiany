@@ -33,6 +33,8 @@
 #define DEG_BY_WRONG_VARIABLE "DEG BY WRONG VARIABLE"
 /// błędny argument `AT`
 #define AT_WRONG_VALUE "AT WRONG VALUE"
+/// błędny argument `COMPOSE`
+#define COMPOSE_WRONG_PARAMETER "COMPOSE WRONG PARAMETER"
 /// niepoprawne polecenie
 #define WRONG_COMMAND "WRONG COMMAND"
 /// niepoprawne wielomian
@@ -136,6 +138,15 @@ static inline bool HasDegByAnArgument(const CVector *str) {
 }
 
 /**
+ * Sprawdza czy polecenie COMPOSE zawiera argument.
+ * @param[in] str : wiersz
+ * @return Czy polecenie COMPOSE zawiera argument?
+ */
+static inline bool HasComposeAnArgument(const CVector *str) {
+    return str->size >= 9 && str->items[7] == ' ' && isdigit(str->items[8]);
+}
+
+/**
  * Sprawdza czy polecenie AT zawiera argument.
  * @param[in] str : wiersz
  * @return Czy polecenie AT zawiera argument?
@@ -222,6 +233,24 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
         }
         else {
             PrintErrorMsg(lineNr, AT_WRONG_VALUE);
+            return WrongLine();
+        }
+    }
+    if (IsCorrectCommand(str, "COMPOSE")) {
+        if (HasComposeAnArgument(str)) {
+            char *end;
+            errno = 0;
+            size_t arg = strtoull(str->items + 8, &end, 10);
+
+            if (errno == ERANGE || *end != '\0') {
+                PrintErrorMsg(lineNr, COMPOSE_WRONG_PARAMETER);
+                return WrongLine();
+            }
+
+            return CommandLineWithArg(COMPOSE, arg);
+        }
+        else {
+            PrintErrorMsg(lineNr, COMPOSE_WRONG_PARAMETER);
             return WrongLine();
         }
     }

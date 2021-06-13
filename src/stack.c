@@ -66,3 +66,7 @@ Poly StackTop(const Stack *self) {
 bool StackEmpty(const Stack *self) {
     return self->size == 0;
 }
+
+size_t StackSize(const Stack *self) {
+    return self->size;
+}

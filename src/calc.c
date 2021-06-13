@@ -14,6 +14,19 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+/**
+ * Sprawdza, czy udało się zaalokować pamięć. Jeśli nie, kończy działanie
+ * programu z kodem 1.
+ * @param[in] p : wskaźnik zwrócony przez funkcję alokującą pamięć
+ */
+#define CHECK_PTR(p)        \
+    do {                    \
+        if (p == NULL) {    \
+            exit(1);        \
+        }                   \
+    } while (0)
 
 /// błąd oznaczający zbyt mało argumentów na stosie
 #define STACK_UNDERFLOW "STACK UNDERFLOW"
@@ -193,6 +206,31 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                 }
                 else {
                     PrintErrorMsg(lineNr, STACK_UNDERFLOW);
+                }
+                break;
+            case COMPOSE:
+                if (StackSize(stack) <= (size_t)line->arg) {
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
+                }
+                else {
+                    Poly p = StackTop(stack);
+                    StackPop(stack);
+
+                    Poly *q = malloc(line->arg * sizeof (Poly));
+                    CHECK_PTR(q);
+
+                    for (size_t i = line->arg - 1; i != (size_t)(-1); --i) {
+                        q[i] = StackTop(stack);
+                        StackPop(stack);
+                    }
+
+                    StackPush(stack, PolyCompose(&p, line->arg, q));
+
+                    PolyDestroy(&p);
+                    for (size_t i = 0; i < (size_t)line->arg; ++i) {
+                        PolyDestroy(&q[i]);
+                    }
+                    free(q);
                 }
                 break;
         }
