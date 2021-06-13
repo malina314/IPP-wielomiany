@@ -15,7 +15,6 @@
 #include <limits.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 
 /**
@@ -29,6 +28,15 @@
             exit(1);        \
         }                   \
     } while (0)
+
+/// błędny argument `DEG_BY`
+#define DEG_BY_WRONG_VARIABLE "DEG BY WRONG VARIABLE"
+/// błędny argument `AT`
+#define AT_WRONG_VALUE "AT WRONG VALUE"
+/// niepoprawne polecenie
+#define WRONG_COMMAND "WRONG COMMAND"
+/// niepoprawne wielomian
+#define WRONG_POLY "WRONG POLY"
 
 /**
  * Sprawdza czy @p pre jest prefiksem @p str.
@@ -188,14 +196,14 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
             size_t arg = strtoull(str->items + 7, &end, 10);
 
             if (errno == ERANGE || *end != '\0') {
-                fprintf(stderr, "ERROR %zu DEG BY WRONG VARIABLE\n", lineNr);
+                PrintErrorMsg(lineNr, DEG_BY_WRONG_VARIABLE);
                 return WrongLine();
             }
 
             return CommandLineWithArg(DEG_BY, arg);
         }
         else {
-            fprintf(stderr, "ERROR %zu DEG BY WRONG VARIABLE\n", lineNr);
+            PrintErrorMsg(lineNr, DEG_BY_WRONG_VARIABLE);
             return WrongLine();
         }
     }
@@ -206,19 +214,19 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
             poly_coeff_t arg = strtoll(str->items + 3, &end, 10);
 
             if (errno == ERANGE || *end != '\0') {
-                fprintf(stderr, "ERROR %zu AT WRONG VALUE\n", lineNr);
+                PrintErrorMsg(lineNr, AT_WRONG_VALUE);
                 return WrongLine();
             }
 
             return CommandLineWithArg(AT, arg);
         }
         else {
-            fprintf(stderr, "ERROR %zu AT WRONG VALUE\n", lineNr);
+            PrintErrorMsg(lineNr, AT_WRONG_VALUE);
             return WrongLine();
         }
     }
 
-    fprintf(stderr, "ERROR %zu WRONG COMMAND\n", lineNr);
+    PrintErrorMsg(lineNr, WRONG_COMMAND);
     return WrongLine();
 }
 
@@ -366,7 +374,7 @@ static Poly ParsePolyHelper(char *begin, char **end, bool *err) {
  */
 static Line ParsePoly(const CVector *str, size_t lineNr) {
     if (HasIllegalCharacters(str) || !AreParenthesesValid(str->items)) {
-        fprintf(stderr, "ERROR %zu WRONG POLY\n", lineNr);
+        PrintErrorMsg(lineNr, WRONG_POLY);
         return WrongLine();
     }
 
@@ -376,7 +384,7 @@ static Line ParsePoly(const CVector *str, size_t lineNr) {
     Poly p = ParsePolyHelper(str->items, &end, &err);
 
     if (err || *end != '\0') {
-        fprintf(stderr, "ERROR %zu WRONG POLY\n", lineNr);
+        PrintErrorMsg(lineNr, WRONG_POLY);
         PolyDestroy(&p);
         return WrongLine();
     }

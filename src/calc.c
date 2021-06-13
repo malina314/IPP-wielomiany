@@ -15,6 +15,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+/// błąd oznaczający zbyt mało argumentów na stosie
+#define STACK_UNDERFLOW "STACK UNDERFLOW"
+
 /**
  * Wykonuje polecenie lub wstawia wielomian na stos.
  * @param[in] line : wiersz z poleceniem lub wielomianem
@@ -36,7 +39,8 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     printf("%d\n", PolyIsCoeff(&p));
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
+
                 }
                 break;
             case IS_ZERO:
@@ -45,7 +49,7 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     printf("%d\n", PolyIsZero(&p));
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case CLONE:
@@ -54,7 +58,7 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     StackPush(stack, PolyClone(&p));
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case ADD:
@@ -70,11 +74,11 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     }
                     else {
                         StackPush(stack, p);
-                        fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                        PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                     }
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case MUL:
@@ -90,11 +94,11 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     }
                     else {
                         StackPush(stack, p);
-                        fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                        PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                     }
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case NEG:
@@ -105,7 +109,7 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     PolyDestroy(&p);
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case SUB:
@@ -121,11 +125,11 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     }
                     else {
                         StackPush(stack, p);
-                        fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                        PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                     }
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case IS_EQ:
@@ -137,12 +141,12 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                         printf("%d\n", PolyIsEq(&p, &q));
                     }
                     else {
-                        fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                        PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                     }
                     StackPush(stack, p);
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case DEG:
@@ -151,7 +155,7 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     printf("%d\n", PolyDeg(&p));
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case DEG_BY:
@@ -160,7 +164,7 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     printf("%d\n", PolyDegBy(&p, (size_t)line->arg));
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case AT:
@@ -171,7 +175,7 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     PolyDestroy(&p);
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case PRINT:
@@ -180,7 +184,7 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     PolyPrint(&p, true);
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
             case POP:
@@ -188,7 +192,7 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     StackHardPop(stack);
                 }
                 else {
-                    fprintf(stderr, "ERROR %zu STACK UNDERFLOW\n", lineNr);
+                    PrintErrorMsg(lineNr, STACK_UNDERFLOW);
                 }
                 break;
         }
