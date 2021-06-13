@@ -241,7 +241,7 @@ static int MonoCompare(const void* a, const void* b) {
     return 0;
 }
 
-Poly PolyAddMonos(size_t count, const Mono monos[]) {
+Poly PolyOwnMonos(size_t count, Mono *monos) {
     if (count == 0) {
         return PolyZero();
     }
@@ -254,29 +254,25 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
         return p;
     }
 
-    Mono *monosArr = malloc(count * sizeof (Mono));
-    CHECK_PTR(monosArr);
-    memcpy(monosArr, monos, count * sizeof (Mono));
-
-    if (!MonoIsArraySorted(count, monosArr)) {
-        qsort(monosArr, count, sizeof (Mono), MonoCompare);
+    if (!MonoIsArraySorted(count, monos)) {
+        qsort(monos, count, sizeof (Mono), MonoCompare);
     }
 
     Poly res = PolyCreate(count);
 
     size_t k = 0;
 
-    res.arr[k++] = monosArr[0];
+    res.arr[k++] = monos[0];
 
     for (size_t i = 1; i < count; ++i) {
-        if (monosArr[i].exp == res.arr[k - 1].exp) {
-            Poly sum = PolyAdd(&res.arr[k - 1].p, &monosArr[i].p);
+        if (monos[i].exp == res.arr[k - 1].exp) {
+            Poly sum = PolyAdd(&res.arr[k - 1].p, &monos[i].p);
             MonoDestroy(&res.arr[k - 1]);
-            MonoDestroy(&monosArr[i]);
+            MonoDestroy(&monos[i]);
             res.arr[k - 1].p = sum;
         }
         else {
-            res.arr[k++] = monosArr[i];
+            res.arr[k++] = monos[i];
         }
     }
 
@@ -286,9 +282,36 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
 
     PolyNormalize(&res);
 
-    free(monosArr);
+    free(monos);
 
     return res;
+}
+
+Poly PolyAddMonos(size_t count, const Mono monos[]) {
+    if (count == 0) {
+        return PolyZero();
+    }
+
+    Mono *monosArr = malloc(count * sizeof (Mono));
+    CHECK_PTR(monosArr);
+    memcpy(monosArr, monos, count * sizeof (Mono));
+
+    return PolyOwnMonos(count, monosArr);
+}
+
+Poly PolyCloneMonos(size_t count, const Mono monos[]) {
+    if (count == 0) {
+        return PolyZero();
+    }
+
+    Mono *monosArr = malloc(count * sizeof (Mono));
+    CHECK_PTR(monosArr);
+
+    for (size_t i = 0; i < count; ++i) {
+        monosArr[i] = MonoClone(&monos[i]);
+    }
+
+    return PolyOwnMonos(count, monosArr);
 }
 
 /**
@@ -524,4 +547,8 @@ void PolyPrint(const Poly *p, bool newLine) {
     if (newLine) {
         printf("\n");
     }
+}
+
+Poly PolyCompose(const Poly *p, size_t k, const Poly q[]){
+    return *p;
 }

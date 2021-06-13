@@ -148,6 +148,18 @@ static inline Mono MonoClone(const Mono *m) {
 Poly PolyAdd(const Poly *p, const Poly *q);
 
 /**
+ * Sumuje listę jednomianów i tworzy z nich wielomian. Przejmuje na własność
+ * pamięć wskazywaną przez @p monos i jej zawartość. Może dowolnie modyfikować
+ * zawartość tej pamięci. Zakładamy, że pamięć wskazywana przez @p monos
+ * została zaalokowana na stercie. Jeśli @p count lub @p monos jest równe zeru
+ * (`NULL`), tworzy wielomian tożsamościowo równy zeru.
+ * @param[in] count : liczba jednomianów
+ * @param[in] monos : tablica jednomianów
+ * @return wielomian będący sumą jednomianów
+ */
+Poly PolyOwnMonos(size_t count, Mono *monos);
+
+/**
  * Sumuje listę jednomianów i tworzy z nich wielomian.
  * Przejmuje na własność zawartość tablicy @p monos.
  * @param[in] count : liczba jednomianów
@@ -155,6 +167,17 @@ Poly PolyAdd(const Poly *p, const Poly *q);
  * @return wielomian będący sumą jednomianów
  */
 Poly PolyAddMonos(size_t count, const Mono monos[]);
+
+/**
+ * Sumuje listę jednomianów i tworzy z nich wielomian. Nie modyfikuje zawartości
+ * tablicy @p monos. Jeśli jest to wymagane, to wykonuje pełne kopie jednomianów
+ * z tablicy @p monos. Jeśli @p count lub @p monos jest równe zeru (`NULL`),
+ * tworzy wielomian tożsamościowo równy zeru.
+ * @param[in] count : liczba jednomianów
+ * @param[in] monos : tablica jednomianów
+ * @return wielomian będący sumą jednomianów
+ */
+Poly PolyCloneMonos(size_t count, const Mono monos[]);
 
 /**
  * Mnoży dwa wielomiany.
@@ -225,5 +248,21 @@ Poly PolyAt(const Poly *p, poly_coeff_t x);
  * @param[in] newLine : czy wypisać po wielomianie znak nowej linii?
  */
 void PolyPrint(const Poly *p, bool newLine);
+
+/**
+ * Składa wielomiany. Operację składania wielomianów definiujemy w sposób
+ * następujący. Niech @f$l@f$ oznacza liczbę zmiennych wielomianu @p p i niech
+ * te zmienne są oznaczone odpowiednio @f$x_0, x_1, x_2, ..., x_{l − 1}@f$.
+ * Wynikiem złożenia jest wielomian @f$p(q_0, q_1, q_2, ...)@f$, czyli
+ * wielomian powstający przez podstawienie w wielomianie @p p pod zmienną
+ * @f$x_i@f$ wielomianu @f$q_i@f$ dla @f$i = 0, 1, 2, ..., \min(k, l) − 1@f$.
+ * Jeśli @f$k < l@f$, to pod zmienne @f$x_k, ..., x_{l − 1}@f$ podstawiane są
+ * zera.
+ * @param[in,out] p : wielomian @p p
+ * @param[in] k : rozmiar tablicy wielomianów @p q
+ * @param[in] q : tablica wielomianów
+ * @return
+ */
+Poly PolyCompose(const Poly *p, size_t k, const Poly q[]);
 
 #endif /* __POLY_H__ */
