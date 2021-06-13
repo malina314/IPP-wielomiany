@@ -549,6 +549,44 @@ void PolyPrint(const Poly *p, bool newLine) {
     }
 }
 
-Poly PolyCompose(const Poly *p, size_t k, const Poly q[]){
-    return *p;
+/**
+ * Oblicza @p n-tą potęgę wielomianu @p p.
+ * @param[in] p : wielomian
+ * @param[in] n : wykładnik
+ * @return @f$p^n@f$
+ */
+Poly PolyPow(const Poly *p, poly_exp_t n) {
+    if (PolyIsCoeff(p)) {
+        return PolyFromCoeff(FastPow(p->coeff, n));
+    }
+    else if (n == 1) {
+        return PolyClone(p);
+    }
+    else {
+        Poly res = *p;
+        for (size_t i = 0; i < (size_t)(n - 1); ++i) {
+            res = PolyMul(&res, p);
+        }
+        return res;
+    }
+}
+
+Poly PolyCompose(const Poly *p, size_t k, const Poly q[]) {
+    if (k == 0 || PolyIsCoeff(p)) {
+        return PolyAt(p, 0);
+    }
+
+    Poly res = PolyZero();
+
+    for (size_t i = 0; i < p->size; ++i) {
+        Poly tmp1 = PolyPow(&q[0], p->arr[i].exp);
+        Poly tmp2 = PolyCompose(&p->arr[i].p, k - 1, q + 1);
+        Poly tmp3 = PolyMul(&tmp2, &tmp1);
+        res = PolyAdd(&res, &tmp3);
+        PolyDestroy(&tmp1);
+        PolyDestroy(&tmp2);
+        PolyDestroy(&tmp3);
+    }
+
+    return res;
 }
