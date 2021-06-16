@@ -9,6 +9,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 /** DANE DO TESTÓW **/
 
@@ -3283,9 +3284,9 @@ static bool AtTest2(void) {
     Poly p3 = PolyAt(&p, 1);
     if (!PolyIsEq(&p3, &p2))
         result = false;
-    if (PolyDeg(&p) != (upper_size - 1) + (poly_depth * ((poly_exp_t)poly_size - 1)))
+    if ((size_t)PolyDeg(&p) != (upper_size - 1) + (poly_depth * ((poly_exp_t)poly_size - 1)))
         result = false;
-    if (PolyDegBy(&p, 0) != upper_size - 1)
+    if ((size_t)PolyDegBy(&p, 0) != upper_size - 1)
         result = false;
     if (PolyDegBy(&p, 1) != (poly_exp_t)poly_size - 1)
         result = false;
@@ -3997,10 +3998,6 @@ static bool MemoryGroup(void) {
 
 /** URUCHAMIANIE TESTÓW **/
 
-// Możliwe wyniki testu
-#define TEST_PASS  0
-#define TEST_FAIL  125
-#define TEST_WRONG 2
 
 // Liczba elementów tablicy x
 #define SIZE(x) (sizeof (x) / sizeof (x)[0])
@@ -4048,13 +4045,26 @@ static const test_list_t test_list[] = {
         TEST(MemoryGroup),
 };
 
-int main(int argc, char *argv[]) {
-    if (argc != 2)
-        return TEST_WRONG;
+int main() {
+    size_t ctr = 0;
 
-    for (size_t i = 0; i < SIZE(test_list); ++i)
-    if (strcmp(argv[1], test_list[i].name) == 0)
-        return test_list[i].function() ? TEST_PASS : TEST_FAIL;
+    for (size_t i = 0; i < SIZE(test_list); ++i) {
+        printf("running test %s\n", test_list[i].name);
+        if (test_list[i].function()) {
+            printf("test %s OK\n", test_list[i].name);
+        }
+        else {
+            printf("test %s FAILED\n", test_list[i].name);
+            ctr++;
+        }
+    }
 
-    return TEST_WRONG;
+    if (ctr == 0) {
+        printf("all tests OK\n");
+        return 0;
+    }
+    else {
+        printf("%zu tests FAILED\n", ctr);
+        return 1;
+    }
 }

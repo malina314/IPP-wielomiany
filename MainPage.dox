@@ -41,7 +41,9 @@ AT x – wylicza wartość wielomianu w punkcie x, usuwa wielomian z wierzchołk
 na stos wynik operacji;\n
 PRINT – wypisuje na standardowe wyjście wielomian z wierzchołka stosu, wielomian wypisywany
 jest w najprostszej postaci, zgodnie z założeniami implementacji biblioteki poly.h ;\n
-POP – usuwa wielomian z wierzchołka stosu.
+POP – usuwa wielomian z wierzchołka stosu;\n
+COMPOSE k – zdejmuje z wierzchołka stosu najpierw wielomian `p`, a potem kolejno wielomiany
+`q[k - 1], q[k - 2], ..., q[0]` i umieszcza na stosie wynik operacji złożenia.
 
 ### Opis biblioteki poly
 Polynomials jest biblioteką umożliwiającą operacje na wielomianach rzadkich
@@ -61,17 +63,19 @@ Program można skompilować w wersji release za pomocą sekwencji poleceń:
     cmake ..
     make
     make doc
+    make test
 \endcode
 
 lub w wersji debug:
 \code{.sh}
-mkdir debug
-cd debug
-cmake -D CMAKE_BUILD_TYPE=Debug ..
-make
-make doc
+    mkdir debug
+    cd debug
+    cmake -D CMAKE_BUILD_TYPE=Debug ..
+    make
+    make doc
+    make test
 \endcode
-W wyniku kompilacji w odpowiednim katalogu powstaje plik wykonywalny `poly`
-oraz dokumentacja.
+W wyniku kompilacji w odpowiednim katalogu powstaje plik wykonywalny `poly`,
+dokumentacja oraz plik wykonywalny `poly_test` z testami biblioteki `poly`.
 
 */
