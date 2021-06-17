@@ -247,10 +247,12 @@ Poly PolyOwnMonos(size_t count, Mono *monos) {
     }
     if (count == 1) {
         if (PolyIsZero(&monos[0].p)) {
+            free(monos);
             return PolyZero();
         }
         Poly p = PolyFormMono(monos[0]);
         PolyNormalize(&p);
+        free(monos);
         return p;
     }
 
@@ -567,14 +569,22 @@ static inline Poly PolyPow(const Poly *p, poly_exp_t n) {
     }
     else {
         Poly res = PolyFromCoeff(1);
-        Poly base = *p;
+        Poly base = PolyClone(p);
+
         while (n) {
             if (n % 2 == 1) {
+                Poly tmp = res;
                 res = PolyMul(&res, &base);
+                PolyDestroy(&tmp);
             }
             n /= 2;
+            Poly tmp = base;
             base = PolyMul(&base, &base);
+            PolyDestroy(&tmp);
         }
+
+        PolyDestroy(&base);
+
         return res;
     }
 }
@@ -618,10 +628,12 @@ Poly PolyCompose(const Poly *p, size_t k, const Poly q[]) {
         Poly tmp1 = PolyPow(&q[0], p->arr[i].exp);
         Poly tmp2 = PolyCompose(&p->arr[i].p, k - 1, q + 1);
         Poly tmp3 = PolyMul(&tmp2, &tmp1);
+        Poly tmp4 = res;
         res = PolyAdd(&res, &tmp3);
         PolyDestroy(&tmp1);
         PolyDestroy(&tmp2);
         PolyDestroy(&tmp3);
+        PolyDestroy(&tmp4);
     }
 
     return res;
