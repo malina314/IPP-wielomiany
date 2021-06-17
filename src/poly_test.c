@@ -2939,6 +2939,58 @@ static bool TestAt(Poly a, poly_coeff_t x, Poly res) {
     return is_eq;
 }
 
+static bool TestCompose(Poly a, size_t k, Poly q[], Poly res) {
+    Poly b = PolyCompose(&a, k, q);
+    bool is_eq = PolyIsEq(&b, &res);
+    PolyDestroy(&a);
+    PolyDestroy(&b);
+    PolyDestroy(&res);
+    for (size_t i = 0; i < k; ++i) {
+        PolyDestroy(&q[i]);
+    }
+    return is_eq;
+}
+
+static bool TestOwnMonos(size_t count, Mono monos[], Poly res) {
+    Mono *arr = malloc(count * sizeof(Mono));
+    memcpy(arr, monos, count * sizeof(Mono));
+
+    Poly b = PolyOwnMonos(count, arr);
+    bool is_eq = PolyIsEq(&b, &res);
+    PolyDestroy(&b);
+    PolyDestroy(&res);
+    return is_eq;
+}
+
+static bool TestCloneMonos(size_t count, Mono monos[], Poly res) {
+    Mono *monosCopy = malloc(count * sizeof(Mono));
+    for (size_t i = 0; i < count; i++) {
+        monosCopy[i] = MonoClone(&monos[i]);
+    }
+
+    Poly b = PolyCloneMonos(count, monos);
+    bool is_eq = PolyIsEq(&b, &res);
+
+    for (size_t i = 0; i < count; i++) {
+        is_eq &= monosCopy[i].exp == monos[i].exp;
+        is_eq &= PolyIsEq(&monosCopy[i].p, &monos[i].p);
+    }
+
+    for (size_t i = 0; i < count; i++) {
+        MonoDestroy(&monosCopy[i]);
+    }
+    free(monosCopy);
+
+    for (size_t i = 0; i < count; i++) {
+        MonoDestroy(&monos[i]);
+    }
+
+    PolyDestroy(&b);
+    PolyDestroy(&res);
+
+    return is_eq;
+}
+
 /** WŁAŚCIWE TESTY UDOSTĘPNIONE W PRZYKŁADZIE **/
 
 static bool SimpleAddTest(void) {
@@ -3041,6 +3093,82 @@ static bool SimpleAddMonosTest(void) {
                     M(P(C(2), 2), 2)};
         res &= TestAddMonos(6, m, P(C(2), 0, C(1), 1, P(C(2), 1, C(2), 2), 2));
     }
+    return res;
+}
+
+static bool SimpleOwnMonosTest(void) {
+    bool res = true;
+    {
+        Mono m[] = {M(C(-1), 0), M(C(1), 0)};
+        res &= TestOwnMonos(2, m, C(0));
+    }
+    {
+        Mono m[] = {M(C(-1), 1), M(C(1), 1)};
+        res &= TestOwnMonos(2, m, C(0));
+    }
+    {
+        Mono m[] = {M(C(1), 0), M(C(1), 0)};
+        res &= TestOwnMonos(2, m, C(2));
+    }
+    {
+        Mono m[] = {M(C(1), 1), M(C(1), 1)};
+        res &= TestOwnMonos(2, m, P(C(2), 1));
+    }
+    {
+        Mono m[] = {M(P(C(-1), 1), 0), M(P(C(1), 1), 0)};
+        res &= TestOwnMonos(2, m, C(0));
+    }
+    {
+        Mono m[] = {M(P(C(-1), 0), 1),
+                    M(P(C(1), 0), 1),
+                    M(C(2), 0),
+                    M(C(1), 1),
+                    M(P(C(2), 1), 2),
+                    M(P(C(2), 2), 2)};
+        res &= TestOwnMonos(6, m, P(C(2), 0, C(1), 1, P(C(2), 1, C(2), 2), 2));
+    }
+    return res;
+}
+
+static bool SimpleCloneMonosTest(void) {
+    bool res = true;
+    {
+        Mono m[] = {M(C(-1), 0), M(C(1), 0)};
+        res &= TestCloneMonos(2, m, C(0));
+    }
+    {
+        Mono m[] = {M(C(-1), 1), M(C(1), 1)};
+        res &= TestCloneMonos(2, m, C(0));
+    }
+    {
+        Mono m[] = {M(C(1), 0), M(C(1), 0)};
+        res &= TestCloneMonos(2, m, C(2));
+    }
+    {
+        Mono m[] = {M(C(1), 1), M(C(1), 1)};
+        res &= TestCloneMonos(2, m, P(C(2), 1));
+    }
+    {
+        Mono m[] = {M(P(C(-1), 1), 0), M(P(C(1), 1), 0)};
+        res &= TestCloneMonos(2, m, C(0));
+    }
+    {
+        Mono m[] = {M(P(C(-1), 0), 1),
+                    M(P(C(1), 0), 1),
+                    M(C(2), 0),
+                    M(C(1), 1),
+                    M(P(C(2), 1), 2),
+                    M(P(C(2), 2), 2)};
+        res &= TestCloneMonos(6, m, P(C(2), 0, C(1), 1, P(C(2), 1, C(2), 2), 2));
+    }
+    return res;
+}
+
+static bool SimpleComposeTest(void) {
+    bool res = true;
+    Poly arr[1];
+    arr[0] = P(C(1), 2);
+    res &= TestCompose(P(C(2), 0, C(1), 1), 1, arr, P(C(2), 0, C(1), 2));
     return res;
 }
 
@@ -3968,6 +4096,11 @@ static bool MemoryFreeTest(void) {
     return res;
 }
 
+//Poly PolyCompose(const Poly *p, size_t k, const Poly q[]);
+//Poly PolyOwnMonos(size_t count, Mono *monos);
+// Poly PolyCloneMonos(size_t count, const Mono monos[]);
+
+
 /** GRUPY TESTÓW **/
 
 static bool SimpleNegGroup(void) {
@@ -4043,9 +4176,10 @@ static const test_list_t test_list[] = {
         TEST(MemoryThiefTest),
         TEST(MemoryFreeTest),
         TEST(MemoryGroup),
+        TEST(SimpleOwnMonosTest),
+        TEST(SimpleCloneMonosTest),
+        TEST(SimpleComposeTest),
 };
-
-//todo testy na PolyOwn i to drugie
 
 int main() {
     size_t ctr = 0;
