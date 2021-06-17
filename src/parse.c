@@ -61,7 +61,8 @@ static inline bool IsPrefix(const char *pre, const char *str) {
 static inline bool IsCorrectCommand(const CVector *cv, const char *str) {
     size_t len = strlen(str);
     return IsPrefix(str, cv->items) &&
-        ((cv->size > len && isspace(cv->items[len])) || cv->items[len] == '\0');
+        ((cv->size > len && isspace(cv->items[len])) ||
+        (cv->size - 1 == len && cv->items[len] == '\0'));
 }
 
 /**
@@ -157,6 +158,18 @@ static inline bool HasAtAnArgument(const CVector *str) {
 }
 
 /**
+ * Sprawdza, czy nastąpił błąd podczas konwersji argumentu. Za błąd uznaję
+ * argument spoza zakresu lub dodatkowe znaki po argumencie.
+ * @param[in] str : wiersz
+ * @param[in] end : wskaźnik na znak, na którym zakończyła się konwersja.
+ * @return Czy nastąpił błąd podczas konwersji?
+ */
+static inline bool ArgumentError(const CVector *str, const char *end) {
+    return errno == ERANGE || *end != '\0' ||
+            (size_t)(end - str->items) != str->size - 1;
+}
+
+/**
  * Konwertuje wiersz na obiekt typu \ref Line reprezentujący wiersz zawierający
  * polecenie.
  * @param[in] str : wiersz
@@ -206,7 +219,7 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
             errno = 0;
             size_t arg = strtoull(str->items + 7, &end, 10);
 
-            if (errno == ERANGE || *end != '\0') {
+            if (ArgumentError(str, end)) {
                 PrintErrorMsg(lineNr, DEG_BY_WRONG_VARIABLE);
                 return WrongLine();
             }
@@ -224,7 +237,7 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
             errno = 0;
             poly_coeff_t arg = strtoll(str->items + 3, &end, 10);
 
-            if (errno == ERANGE || *end != '\0') {
+            if (ArgumentError(str, end)) {
                 PrintErrorMsg(lineNr, AT_WRONG_VALUE);
                 return WrongLine();
             }
@@ -242,7 +255,7 @@ static Line ParseCommand(const CVector *str, size_t lineNr) {
             errno = 0;
             size_t arg = strtoull(str->items + 8, &end, 10);
 
-            if (errno == ERANGE || *end != '\0') {
+            if (ArgumentError(str, end)) {
                 PrintErrorMsg(lineNr, COMPOSE_WRONG_PARAMETER);
                 return WrongLine();
             }

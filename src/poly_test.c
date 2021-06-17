@@ -4045,6 +4045,8 @@ static const test_list_t test_list[] = {
         TEST(MemoryGroup),
 };
 
+//todo testy na PolyOwn i to drugie
+
 int main() {
     size_t ctr = 0;
 
