@@ -624,16 +624,15 @@ Poly PolyCompose(const Poly *p, size_t k, const Poly q[]) {
     Poly res = PolyZero();
 
     for (size_t i = 0; i < p->size; ++i) {
-        //todo ponayzwać to sensownie
-        Poly tmp1 = PolyPow(&q[0], p->arr[i].exp);
-        Poly tmp2 = PolyCompose(&p->arr[i].p, k - 1, q + 1);
-        Poly tmp3 = PolyMul(&tmp2, &tmp1);
-        Poly tmp4 = res;
-        res = PolyAdd(&res, &tmp3);
-        PolyDestroy(&tmp1);
-        PolyDestroy(&tmp2);
-        PolyDestroy(&tmp3);
-        PolyDestroy(&tmp4);
+        Poly qPow = PolyPow(&q[0], p->arr[i].exp);
+        Poly composed = PolyCompose(&p->arr[i].p, k - 1, q + 1);
+        Poly multiplied = PolyMul(&composed, &qPow);
+        Poly tmp = res;
+        res = PolyAdd(&res, &multiplied);
+        PolyDestroy(&qPow);
+        PolyDestroy(&composed);
+        PolyDestroy(&multiplied);
+        PolyDestroy(&tmp);
     }
 
     return res;
