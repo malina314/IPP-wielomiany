@@ -339,6 +339,9 @@ static void PolyMulByCoeff(Poly *p, poly_coeff_t c) {
         PolyDestroy(p);
         *p = PolyZero();
     }
+    else if (c == 1) {
+        return;
+    }
     else if (PolyIsCoeff(p)) {
         p->coeff *= c;
     }
@@ -555,33 +558,63 @@ void PolyPrint(const Poly *p, bool newLine) {
  * @param[in] n : wykładnik
  * @return @f$p^n@f$
  */
-Poly PolyPow(const Poly *p, poly_exp_t n) {
+static inline Poly PolyPow(const Poly *p, poly_exp_t n) {
     if (PolyIsCoeff(p)) {
         return PolyFromCoeff(FastPow(p->coeff, n));
     }
     else if (n == 0) {
         return PolyFromCoeff(1);
     }
-    else if (n == 1) {
-        return PolyClone(p);
-    }
     else {
-        Poly res = *p;
-        for (size_t i = 1; i < (size_t)n; ++i) {
-            res = PolyMul(&res, p);
+        Poly res = PolyFromCoeff(1);
+        Poly base = *p;
+        while (n) {
+            if (n % 2 == 1) {
+                res = PolyMul(&res, &base);
+            }
+            n /= 2;
+            base = PolyMul(&base, &base);
         }
         return res;
     }
 }
 
+/**
+ * Składa wielomian z samymi zerami. Wynikiem takiego złożenia jest
+ * współczynnik.
+ * @param[in] p : wielomian
+ * @return wynik złożenia
+ */
+static inline poly_coeff_t PolyComposeWithZeros(const Poly *p) {
+    if (PolyIsCoeff(p)) {
+        return p->coeff;
+    }
+
+    poly_coeff_t res = 0;
+
+    for (size_t i = 0; i < p->size; ++i) {
+        // jeżeli wykładnik jest równy 0 to mamy 0^0 = 1
+        // w przeciwnym razie mamy 0^n = 0, więc nie musiumy dalej liczyć
+        if (p->arr[i].exp == 0) {
+            res += PolyComposeWithZeros(&p->arr[i].p);
+        }
+    }
+
+    return res;
+}
+
 Poly PolyCompose(const Poly *p, size_t k, const Poly q[]) {
-    if (k == 0 || PolyIsCoeff(p)) {
-        return PolyAt(p, 0);
+    if (k == 0) {
+        return PolyFromCoeff(PolyComposeWithZeros(p));
+    }
+    if (PolyIsCoeff(p)) {
+        return *p;
     }
 
     Poly res = PolyZero();
 
     for (size_t i = 0; i < p->size; ++i) {
+        //todo ponayzwać to sensownie
         Poly tmp1 = PolyPow(&q[0], p->arr[i].exp);
         Poly tmp2 = PolyCompose(&p->arr[i].p, k - 1, q + 1);
         Poly tmp3 = PolyMul(&tmp2, &tmp1);

@@ -261,7 +261,7 @@ void PolyPrint(const Poly *p, bool newLine);
  * @param[in,out] p : wielomian @p p
  * @param[in] k : rozmiar tablicy wielomianów @p q
  * @param[in] q : tablica wielomianów
- * @return
+ * @return @f$p(q_0, q_1, q_2, ...)@f$
  */
 Poly PolyCompose(const Poly *p, size_t k, const Poly q[]);
 
