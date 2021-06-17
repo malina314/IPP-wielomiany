@@ -578,9 +578,11 @@ static inline Poly PolyPow(const Poly *p, poly_exp_t n) {
                 PolyDestroy(&tmp);
             }
             n /= 2;
-            Poly tmp = base;
-            base = PolyMul(&base, &base);
-            PolyDestroy(&tmp);
+            if (n != 0) {
+                Poly tmp = base;
+                base = PolyMul(&base, &base);
+                PolyDestroy(&tmp);
+            }
         }
 
         PolyDestroy(&base);
