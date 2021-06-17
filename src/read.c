@@ -39,12 +39,9 @@ bool ReadLine(CVector *input) {
     }
 
     do {
-         CVectorPush(input, c);
-    } while (c != '\n' && (c = (char)getchar()) != EOF);
-
-    if (c == '\n') {
-        CVectorPop(input);
-    }
+        CVectorPush(input, c);
+        c = (char)getchar();
+    } while (!feof(stdin) && c != '\n');
 
     CVectorPush(input, '\0');
 
