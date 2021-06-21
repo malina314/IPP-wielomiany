@@ -219,8 +219,8 @@ static inline void Calc(const Line *line, Stack *stack, size_t lineNr) {
                     Poly *q = malloc(line->arg * sizeof (Poly));
                     CHECK_PTR(q);
 
-                    for (size_t i = line->arg - 1; i != (size_t)(-1); --i) {
-                        q[i] = StackTop(stack);
+                    for (size_t i = 1; i <= (size_t)line->arg; ++i) {
+                        q[line->arg - i] = StackTop(stack);
                         StackPop(stack);
                     }
 
