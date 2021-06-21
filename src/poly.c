@@ -242,7 +242,7 @@ static int MonoCompare(const void* a, const void* b) {
 }
 
 Poly PolyOwnMonos(size_t count, Mono *monos) {
-    if (count == 0) {
+    if (count == 0 || monos == NULL) {
         return PolyZero();
     }
     if (count == 1) {
@@ -290,7 +290,7 @@ Poly PolyOwnMonos(size_t count, Mono *monos) {
 }
 
 Poly PolyAddMonos(size_t count, const Mono monos[]) {
-    if (count == 0) {
+    if (count == 0 || monos == NULL) {
         return PolyZero();
     }
 
@@ -302,7 +302,7 @@ Poly PolyAddMonos(size_t count, const Mono monos[]) {
 }
 
 Poly PolyCloneMonos(size_t count, const Mono monos[]) {
-    if (count == 0) {
+    if (count == 0 || monos == NULL) {
         return PolyZero();
     }
 
